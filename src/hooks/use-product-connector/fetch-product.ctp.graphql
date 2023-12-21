@@ -1,0 +1,29 @@
+query RetrieveCustomObject($id: String!) {
+  product(id: $id) {
+    key
+    masterData {
+      current {
+        allVariants {
+          id
+          assets {
+            sources {
+              uri
+            }
+          }
+          attributesRaw(includeNames: ["configuration"]) {
+            name
+            value
+            referencedResource {
+              id
+              ... on CustomObject {
+                container
+                value
+                version
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
