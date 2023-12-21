@@ -22,4 +22,33 @@ export default defineMessages({
     id: 'CustomizableProduct.noResults',
     defaultMessage: 'No data found.',
   },
+  createNewRow: {
+    id: 'CustomizableProduct.button.createNewRow',
+    description: 'Label for the button to create a new row',
+    defaultMessage: 'Create new row',
+  },
+  columnTypeKey: {
+    id: 'CustomizableProduct.ListView.column.key',
+    description: 'Title of the key',
+    defaultMessage: 'Key',
+  },
+  columnTypeType: {
+    id: 'CustomizableProduct.ListView.column.type',
+    description: 'Title of the type',
+    defaultMessage: 'Type',
+  },
+  attributeLabelcolor: {
+    id: 'ProjectSettings.ProductTypes.Details.labels.boolean',
+    defaultMessage: 'Color',
+  },
+  localizedLabel: {
+    id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.localizedLabel',
+    description: '',
+    defaultMessage: 'Localized',
+  },
+  columnIsRequired: {
+    id: 'AttributeGroups.AssignedAttributes.columnIsRequired',
+    description: 'Message for the column required in the attributes table',
+    defaultMessage: 'Required',
+  },
 });

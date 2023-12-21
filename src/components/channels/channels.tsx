@@ -29,18 +29,13 @@ const columns = [
 
 const Channels = () => {
   const intl = useIntl();
-  const { user, dataLocale, projectLanguages, id } = useCustomViewContext(
-    (context: TMergedContext) => (
-      console.log(context),
-      {
-        user: context.user,
-        dataLocale: context.dataLocale,
-        projectLanguages: context.project?.languages,
-        id: context.customViewConfig.id,
-      }
-    )
+  const { user, dataLocale, projectLanguages } = useCustomViewContext(
+    (context: TMergedContext) => ({
+      user: context.user,
+      dataLocale: context.dataLocale,
+      projectLanguages: context.project?.languages,
+    })
   );
-  console.log(id);
   const { page, perPage } = usePaginationState();
   const tableSorting = useDataTableSortingState({ key: 'key', order: 'asc' });
   const { channelsPaginatedResult, error, loading } = useProductFetcher({

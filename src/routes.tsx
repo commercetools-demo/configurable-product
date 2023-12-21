@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import CustomizableProduct from './components/customizable-product';
-import { Route, Switch, useRouteMatch } from 'react-router';
 
 type ApplicationRoutesProps = {
   children?: ReactNode;
@@ -17,23 +16,7 @@ const ApplicationRoutes = (_props: ApplicationRoutesProps) => {
    * is redundant and not strictly necessary.
    */
 
-  const match = useRouteMatch();
-
-  console.log(`${match.path}/page-A`);
-
-  return (
-    <Switch>
-      <Route path={`${match.path}/page-A`}>
-        <CustomizableProduct />
-      </Route>
-      <Route path={`${match.path}/page-B`}>
-        <CustomizableProduct />
-      </Route>
-      <Route>
-        <CustomizableProduct />
-      </Route>
-    </Switch>
-  );
+  return <CustomizableProduct />;
 };
 ApplicationRoutes.displayName = 'ApplicationRoutes';
 
