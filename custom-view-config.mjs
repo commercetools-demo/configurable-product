@@ -2,16 +2,16 @@
  * @type {import('@commercetools-frontend/application-config').ConfigOptionsForCustomView}
  */
 const config = {
-  name: 'Customizable Product',
-  cloudIdentifier: 'gcp-eu',
+  name: 'Configurable Product',
+  cloudIdentifier: '${env:CLOUD_IDENTIFIER}',
   env: {
     development: {
       initialProjectKey: 'tech-sales-good-store',
       hostUriPath: "/tech-sales-good-store/products/9c941cc8-d8ca-49ab-b0a6-252154e8dfdb/variants/1"
     },
     production: {
-      customViewId: 'customizable-product',
-      url: 'https://my-custom-view.com',
+      customViewId: '${env:CUSTOM_VIEW_ID}',
+      url: '${env:CUSTOM_VIEW_URL}',
     },
   },
   oAuthScopes: {
