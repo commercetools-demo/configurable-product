@@ -1,4 +1,4 @@
-import { useRetrieveCustomObject } from '../../hooks/use-product-connector/use-product-connector';
+import { useRetrieveCustomObjectForProduct } from '../../hooks/use-product-connector';
 import { ContentNotification } from '@commercetools-uikit/notifications';
 import Text from '@commercetools-uikit/text';
 import { getErrorMessage, mapCustomObject } from '../../helpers';
@@ -33,9 +33,10 @@ const CustomizableProductEditor: FC<Props> = ({ productId, variantId }) => {
   const match = useRouteMatch();
   const { push } = useHistory();
 
-  const { product, error, loading, refetch } = useRetrieveCustomObject({
-    id: productId,
-  });
+  const { product, error, loading, refetch } =
+    useRetrieveCustomObjectForProduct({
+      id: productId,
+    });
   if (error) {
     return (
       <ContentNotification type="error">

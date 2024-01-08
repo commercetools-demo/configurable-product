@@ -1,4 +1,3 @@
-/// <reference path="../../../@types/commercetools__sync-actions/index.d.ts" />
 /// <reference path="../../../@types-extensions/graphql-ctp/index.d.ts" />
 
 import type { ApolloError, ApolloQueryResult } from '@apollo/client';
@@ -24,27 +23,25 @@ type TUseRetrieveCustomObjectFetcher = (
   loading: boolean;
   refetch(): Promise<ApolloQueryResult<TQuery>>;
 };
-export const useRetrieveCustomObject: TUseRetrieveCustomObjectFetcher = ({
-  id,
-  key,
-}) => {
-  const { data, error, loading, refetch } = useMcQuery<
-    TQuery,
-    TQuery_ProductArgs
-  >(RetrieveCustomObject, {
-    variables: {
-      id: id,
-      key: key,
-    },
-    context: {
-      target: GRAPHQL_TARGETS.COMMERCETOOLS_PLATFORM,
-    },
-  });
+export const useRetrieveCustomObjectForProduct: TUseRetrieveCustomObjectFetcher =
+  ({ id, key }) => {
+    const { data, error, loading, refetch } = useMcQuery<
+      TQuery,
+      TQuery_ProductArgs
+    >(RetrieveCustomObject, {
+      variables: {
+        id: id,
+        key: key,
+      },
+      context: {
+        target: GRAPHQL_TARGETS.COMMERCETOOLS_PLATFORM,
+      },
+    });
 
-  return {
-    product: data?.product,
-    error,
-    loading,
-    refetch,
+    return {
+      product: data?.product,
+      error,
+      loading,
+      refetch,
+    };
   };
-};
