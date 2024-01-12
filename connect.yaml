@@ -22,6 +22,7 @@ deployAs:
         - key: CLOUD_IDENTIFIER
           description: one of the following gcp-us, gcp-eu, aws-us, aws-eu
           required: true
+          default: "gcp-eu"
         - key: INITIAL_PROJECT_KEY
           description: development project key
           required: false
