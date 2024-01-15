@@ -19,10 +19,10 @@ deployAs:
         - key: INITIAL_PROJECT_KEY
           description: development project key
           required: false
-        - key: ENABLE_NEW_JSX_TRANSFORM
-          description: enable new jsx transform
+        - key: CLOUD_IDENTIFIER
+          description: cloud
           required: true
-          default: "true"
+          default: "gcp-eu"
       securedConfiguration:
         - key: CTP_CLIENT_ID
           description: client_id of an API Client for the commercetools Composable Commerce Project
