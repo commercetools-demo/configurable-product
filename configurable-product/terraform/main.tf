@@ -26,15 +26,20 @@ resource "vercel_project" "mc-configurable-product" {
     #sad but true, you will need to fork it into your private github org.
     repo = "phofmann/mc-configurable-product"
   }
+  root_directory = "configurable-product"
   build_command    = "yarn build"
   output_directory = "public"
   environment = [{
     key    = "CUSTOM_VIEW_ID"
     target = ["production", "preview", "development"]
     value = local.envs["CUSTOM_VIEW_ID"]
-  }, {
-    key = "CUSTOM_VIEW_URL"
+  },  {
+    key = "APPLICATION_URL"
     target = ["production", "preview", "development"]
-    value = local.envs["CUSTOM_VIEW_URL"]
+    value = local.envs["APPLICATION_URL"]
+  }, {
+    key = "CLOUD_IDENTIFIER"
+    target = ["production", "preview", "development"]
+    value = local.envs["CLOUD_IDENTIFIER"]
   }]
 }
