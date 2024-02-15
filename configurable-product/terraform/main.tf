@@ -41,5 +41,9 @@ resource "vercel_project" "mc-configurable-product" {
     key = "CLOUD_IDENTIFIER"
     target = ["production", "preview", "development"]
     value = local.envs["CLOUD_IDENTIFIER"]
+  }, {
+    key = "INITIAL_PROJECT_KEY"
+    target = ["production", "preview", "development"]
+    value = local.envs["INITIAL_PROJECT_KEY"]
   }]
 }
