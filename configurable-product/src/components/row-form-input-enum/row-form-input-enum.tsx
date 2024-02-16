@@ -1,11 +1,11 @@
 import Spacings from '@commercetools-uikit/spacings';
-import { Row } from './row-form';
+import { Row } from '../row-form/row-form';
 import { useFormik } from 'formik';
 import { FC } from 'react';
 import FieldLabel from '@commercetools-uikit/field-label';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
-import { EnumTable, Item } from './enum-table';
+import { RowFormInputEnumTable, Item } from './row-form-input-enum-table';
 type Formik = ReturnType<typeof useFormik>;
 
 type Props = {
@@ -20,7 +20,7 @@ type Props = {
   };
 };
 
-export const AttributeSettingsField: FC<Props> = ({ formik }) => {
+export const RowFormInputEnum: FC<Props> = ({ formik }) => {
   const handleAddEnumValue = (enumTemplate: Item) => {
     const enumDraftItemIndexes = formik.values.values?.length || 0;
     formik.setFieldValue(`values.${enumDraftItemIndexes}`, enumTemplate);
@@ -63,7 +63,7 @@ export const AttributeSettingsField: FC<Props> = ({ formik }) => {
       <FieldLabel
         title={<FormattedMessage {...messages.attributeSettingsTitle} />}
       />
-      <EnumTable
+      <RowFormInputEnumTable
         formik={formik}
         onAddEnumValue={handleAddEnumValue}
         onChangeEnumValue={handleChangeEnumValue}

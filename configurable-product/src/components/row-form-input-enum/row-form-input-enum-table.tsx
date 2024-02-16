@@ -1,6 +1,6 @@
 import Constraints from '@commercetools-uikit/constraints';
 import Spacings from '@commercetools-uikit/spacings';
-import { Row } from './row-form';
+import { Row } from '../row-form/row-form';
 import { useFormik } from 'formik';
 import { FC, Fragment } from 'react';
 import DataTable, { TRow } from '@commercetools-uikit/data-table';
@@ -25,28 +25,7 @@ export type Item = {
   absoluteIndex?: number;
 };
 
-type Props = {
-  onAddEnumValue: (item: Item) => void;
-  onRemoveEnumValue: (absoluteIndex: number) => void;
-  onChangeEnumValue: ({
-    field,
-    nextValue,
-    absoluteIndex,
-  }: {
-    field: string;
-    nextValue: string;
-    absoluteIndex: number;
-  }) => void;
-  formik: {
-    errors: Formik['errors'];
-    touched: Formik['touched'];
-    setFieldValue: Formik['setFieldValue'];
-    setFieldTouched: Formik['setFieldTouched'];
-    setTouched: Formik['setTouched'];
-    values: Row;
-    handleChange: Formik['handleChange'];
-  };
-};
+type RowItem = { index: number } & Item & TRow;
 
 const getLocalizedEnumLabel = (
   docLabel: LocalizedString,
@@ -55,7 +34,7 @@ const getLocalizedEnumLabel = (
   if (!docLabel) {
     return '';
   }
-  return docLabel[formColumnKey.split('_')[1]];
+  return docLabel[formColumnKey.split('_')[1]] || '';
 };
 const formToDocLocalizedEnumLabel = (formColumnKey: string) =>
   formColumnKey.replace('_', '.');
@@ -87,25 +66,61 @@ const getEnumLanguages = memoize((values) => (languages: Array<string>) => {
     ? sortEnumLanguagesByResourceLanguages(getLangsFromEnums(values), languages)
     : languages;
 });
-/**
- * creates a shape like { key: '', label_de: '', label_en: '' }
- */
-const createEmptyLocalizedEnum = (enumLanguages: Array<string>): Item => ({
+const createEmptyLocalizedEnum = (enumLanguages: Array<any>) => ({
   key: '',
   ...enumLanguages.reduce(
     (acc, lang) => ({ ...acc, label: { ...acc.label, [lang]: '' } }),
-    { label: {} }
+    {}
   ),
 });
 
-type RowItem = { index: number } & Item & TRow;
+const createEmptyPlainEnum = () => ({
+  key: '',
+  label: '',
+});
 
-export const EnumTable: FC<Props> = ({
+const createEmptyEnumValue = (
+  isLocalized: boolean,
+  locales: Array<string> = []
+) =>
+  isLocalized && locales.length > 0
+    ? createEmptyLocalizedEnum(locales)
+    : createEmptyPlainEnum();
+
+type Props = {
+  onAddEnumValue: (item: Item) => void;
+  onRemoveEnumValue: (absoluteIndex: number) => void;
+  onChangeEnumValue: ({
+    field,
+    nextValue,
+    absoluteIndex,
+  }: {
+    field: string;
+    nextValue: string;
+    absoluteIndex: number;
+  }) => void;
+  formik: {
+    errors: Formik['errors'];
+    touched: Formik['touched'];
+    setFieldValue: Formik['setFieldValue'];
+    setFieldTouched: Formik['setFieldTouched'];
+    setTouched: Formik['setTouched'];
+    values: Row;
+    handleChange: Formik['handleChange'];
+  };
+  isDisabled?: boolean;
+  isLocalized?: boolean;
+};
+
+export const RowFormInputEnumTable: FC<Props> = ({
   formik,
   onAddEnumValue,
   onRemoveEnumValue,
   onChangeEnumValue,
+  isDisabled,
+  isLocalized = true,
 }) => {
+  const intl = useIntl();
   const { projectLanguages } = useCustomViewContext(
     (context: TMergedContext) => ({
       projectLanguages: context.project?.languages ?? [],
@@ -115,14 +130,14 @@ export const EnumTable: FC<Props> = ({
     const enumLanguages = getEnumLanguages(formik.values.values)(
       projectLanguages || []
     );
-    onAddEnumValue(createEmptyLocalizedEnum(enumLanguages));
-  };
 
-  const intl = useIntl();
+    const newEnum = createEmptyEnumValue(isLocalized, enumLanguages);
+    onAddEnumValue(newEnum);
+  };
 
   const items =
     !formik.values.values || formik.values.values.length === 0
-      ? [createEmptyLocalizedEnum(projectLanguages)]
+      ? [createEmptyEnumValue(isLocalized, projectLanguages)]
       : formik.values.values;
   const rows = items.map(
     (item, index): RowItem => ({
@@ -138,6 +153,8 @@ export const EnumTable: FC<Props> = ({
     rows,
     key,
     onChangeEnumValue,
+    isLocalized,
+    isDisabled,
   }: {
     row: RowItem;
     rows: Array<Item>;
@@ -151,19 +168,20 @@ export const EnumTable: FC<Props> = ({
       nextValue: string;
       absoluteIndex: number;
     }) => void;
+    isLocalized: boolean;
+    isDisabled?: boolean;
   }) => {
     const nameAttribute = `enums.${row.index}.${key}`;
     const value =
-      (key.startsWith('label')
+      isLocalized && key.startsWith('label')
         ? getLocalizedEnumLabel(row.label as LocalizedString, key)
-        : row[key]) || '';
-
+        : (row[key as keyof RowItem] as string) || '';
     switch (key) {
       case 'delete':
         return (
           <IconButton
             icon={<BinLinearIcon />}
-            isDisabled={rows.length === 1}
+            isDisabled={isDisabled || rows.length === 1}
             label="Delete List Item"
             size="medium"
             onClick={() => onRemoveEnumValue(row.absoluteIndex || 0)}
@@ -175,7 +193,6 @@ export const EnumTable: FC<Props> = ({
             <TextInput
               value={value}
               name={nameAttribute}
-              // hasError={hasError}
               onChange={(event) => {
                 onChangeEnumValue({
                   absoluteIndex: row.absoluteIndex || 0,
@@ -183,12 +200,8 @@ export const EnumTable: FC<Props> = ({
                   nextValue: event.target.value,
                 });
               }}
+              isDisabled={isDisabled}
             />
-            {/*{this.props.enumValueErrors.areAllEnumValuesEmpty && hasError && (*/}
-            {/*  <ErrorMessage>*/}
-            {/*    <FormattedMessage {...messages.areAllEnumValuesEmpty} />*/}
-            {/*  </ErrorMessage>*/}
-            {/*)}*/}
           </Fragment>
         );
     }
@@ -198,7 +211,8 @@ export const EnumTable: FC<Props> = ({
       <Constraints.Horizontal max="scale">
         <DataTable
           columns={createColumnDefinitions(
-            getEnumLanguages(formik.values.values)(projectLanguages || [])
+            getEnumLanguages(formik.values.values)(projectLanguages || []),
+            isLocalized
           )}
           rows={rows}
           itemRenderer={(row, { key }) =>
@@ -207,6 +221,8 @@ export const EnumTable: FC<Props> = ({
               row,
               key,
               onChangeEnumValue: onChangeEnumValue,
+              isLocalized: isLocalized,
+              isDisabled: isDisabled,
             })
           }
           footer={
@@ -214,6 +230,7 @@ export const EnumTable: FC<Props> = ({
               iconLeft={<PlusBoldIcon />}
               label={intl.formatMessage(messages.addEnumButtonLabel)}
               onClick={handleAddEnumClick}
+              isDisabled={isDisabled}
             />
           }
         ></DataTable>

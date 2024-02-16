@@ -79,45 +79,15 @@ export default defineMessages({
     id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.localizedLabel',
     defaultMessage: 'Radio',
   },
-
   requiredLabel: {
     id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.isRequired',
     defaultMessage: 'is Required',
-  },
-  attributeSettingsTitle: {
-    id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.attributeSettingsTitle',
-    description: '',
-    defaultMessage: 'Attribute settings',
-  },
-  addEnumButtonLabel: {
-    id: 'ProjectSettings.ProductType.AttributeDefinitions.Details.EnumTable.addEnumButton.label',
-    description:
-      'The label of the button adding a new enum-value in the footer of the enum-table',
-    defaultMessage: 'Add New List Item',
-  },
-  tableHeaderLabelKey: {
-    id: 'ProjectSettings.ProductType.AttributeDefinitions.Details.EnumTable.headers.key',
-    description:
-      'The column title of the enumeration key in the table displaying enums on the attributed-detail page in product-types administration',
-    defaultMessage: 'Enumeration Key',
-  },
-  tableHeaderLabelLabel: {
-    id: 'ProjectSettings.ProductType.AttributeDefinitions.Details.EnumTable.headers.label',
-    description:
-      'The column title of the enumeration label for plain enums in the table displaying enums on the attributed-detail page in product-types administration',
-    defaultMessage: 'List Item Label',
   },
   editEnumButtonLabel: {
     id: 'ProjectSettings.ProductType.AttributeDefinitions.Details.EnumTable.editEnumButton.label',
     description:
       'The label of the button adding a new enum-value in the footer of the enum-table',
     defaultMessage: 'Edit List Items',
-  },
-  tableHeaderLocalizedLabelLabel: {
-    id: 'ProjectSettings.ProductType.AttributeDefinitions.Details.EnumTable.headers.label.localized',
-    description:
-      'The column title of the enumeration label for localized enums in the table displaying enums on the attributed-detail page in product-types administration',
-    defaultMessage: 'List Item Label ({language})',
   },
   areAllEnumValuesEmpty: {
     id: 'ProjectSettings.ProductType.AttributeDefinitions.Details.EnumTable.enum.empty',

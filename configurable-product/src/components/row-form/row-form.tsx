@@ -9,11 +9,11 @@ import omitEmpty from 'omit-empty-es';
 import SelectField from '@commercetools-uikit/select-field';
 import { useCustomViewContext } from '@commercetools-frontend/application-shell-connectors';
 import { TMergedContext } from '@commercetools-frontend/application-shell-connectors/dist/declarations/src/components/custom-view-context/custom-view-context';
-import { AttributeSettingsField } from './attribute-settings-field';
+import { RowFormInputEnum } from '../row-form-input-enum/row-form-input-enum';
 import LocalizedTextField from '@commercetools-uikit/localized-text-field';
 import LocalizedMultilineTextField from '@commercetools-uikit/localized-multiline-text-field';
 import CheckboxInput from '@commercetools-uikit/checkbox-input';
-import { Item } from './enum-table';
+import { Item } from '../row-form-input-enum/row-form-input-enum-table';
 
 type Formik = ReturnType<typeof useFormik>;
 
@@ -160,7 +160,9 @@ const RowForm: FC<Props> = ({ onSubmit, initialValues, children }) => {
       >
         <FormattedMessage {...messages.requiredLabel} />
       </CheckboxInput>
-      <AttributeSettingsField formik={formik} />
+      {formik.values.config.type === 'color' && (
+        <RowFormInputEnum formik={formik} />
+      )}
     </Spacings.Stack>
   );
 
