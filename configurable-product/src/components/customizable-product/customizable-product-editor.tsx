@@ -1,4 +1,7 @@
-import { useRetrieveCustomObjectForProduct } from '../../hooks/use-product-connector';
+import {
+  useProductUpdater,
+  useRetrieveCustomObjectForProduct,
+} from '../../hooks/use-product-connector';
 import { ContentNotification } from '@commercetools-uikit/notifications';
 import Text from '@commercetools-uikit/text';
 import { getErrorMessage, mapCustomObject } from '../../helpers';
@@ -6,10 +9,11 @@ import messages from './messages';
 import { FC, lazy } from 'react';
 import { TCustomObject } from '../../types/generated/ctp';
 import { InfoMainPage } from '@commercetools-frontend/application-components';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import DataTable, { TRow } from '@commercetools-uikit/data-table';
 import Spacings from '@commercetools-uikit/spacings';
 import SecondaryButton from '@commercetools-uikit/secondary-button';
+import PrimaryButton from '@commercetools-uikit/primary-button';
 import { PlusBoldIcon } from '@commercetools-uikit/icons';
 import { Switch, useHistory, useRouteMatch } from 'react-router';
 import { SuspendedRoute } from '@commercetools-frontend/application-shell';
@@ -18,6 +22,12 @@ import createColumnDefinitions, {
   renderAttributeTypeName,
 } from './column-definitions';
 import BooleanIndicator from '../boolean-indicator';
+import {
+  DOMAINS,
+  NOTIFICATION_KINDS_SIDE,
+} from '@commercetools-frontend/constants';
+import { useShowNotification } from '@commercetools-frontend/actions-global';
+import { useCustomObjectUpdater } from '../../hooks/use-custom-object-connector/use-custom-object-connector';
 
 type Row = ConfigRow & TRow;
 
@@ -28,15 +38,21 @@ export type Props = {
   productId: string;
   variantId: string;
 };
+const configuration = 'configuration';
+const SUPPORTED_PRODUCT_TYPE = 'configurable';
 const CustomizableProductEditor: FC<Props> = ({ productId, variantId }) => {
   const intl = useIntl();
   const match = useRouteMatch();
   const { push } = useHistory();
+  const showNotification = useShowNotification();
+  const customObjectUpdater = useCustomObjectUpdater();
+  const productUpdater = useProductUpdater();
 
   const { product, error, loading, refetch } =
     useRetrieveCustomObjectForProduct({
       id: productId,
     });
+
   if (error) {
     return (
       <ContentNotification type="error">
@@ -48,31 +64,116 @@ const CustomizableProductEditor: FC<Props> = ({ productId, variantId }) => {
   if (!loading && !product) {
     return (
       <ContentNotification type="info">
-        <Text.Body intlMessage={messages.noResults} />
+        <Text.Body>
+          <FormattedMessage
+            {...messages.noProduct}
+            values={{ id: productId }}
+          />
+        </Text.Body>
       </ContentNotification>
     );
   }
-
-  const variant = product?.masterData.current?.allVariants.find(
+  if (product?.productType?.key !== SUPPORTED_PRODUCT_TYPE) {
+    return (
+      <ContentNotification type="info">
+        <Text.Body>
+          <FormattedMessage
+            {...messages.wrongProductType}
+            values={{ productType: SUPPORTED_PRODUCT_TYPE }}
+          />
+        </Text.Body>
+      </ContentNotification>
+    );
+  }
+  const variant = product?.masterData.staged?.allVariants.find(
     (value) => value.id === Number(variantId)
   );
 
   if (!variant) {
     return (
       <ContentNotification type="info">
-        <Text.Body intlMessage={messages.noResults} />
+        <Text.Body>
+          <FormattedMessage
+            {...messages.noVariant}
+            values={{ id: productId, variantId: variantId }}
+          />
+        </Text.Body>
       </ContentNotification>
     );
   }
 
+  let customObjectKey = '';
+  if (product.key && variant.key) {
+    customObjectKey = product.key + '-' + variant.key;
+  } else if (product.key && variant.sku) {
+    customObjectKey = product.key + '-' + variant.sku;
+  } else {
+    customObjectKey = product.id + '-' + variant.sku;
+  }
+  const onSubmit = async () => {
+    const result = await customObjectUpdater.execute({
+      draft: {
+        container: 'configurable-product',
+        key: customObjectKey,
+        value: JSON.stringify({}),
+      },
+      onCompleted() {
+        showNotification({
+          kind: NOTIFICATION_KINDS_SIDE.success,
+          domain: DOMAINS.SIDE,
+          text: intl.formatMessage(messages.editSuccess),
+        });
+      },
+      onError(message) {
+        showNotification({
+          kind: NOTIFICATION_KINDS_SIDE.error,
+          domain: DOMAINS.SIDE,
+          text: intl.formatMessage(messages.editError, { message: message }),
+        });
+
+        refetch();
+      },
+    });
+    await productUpdater.execute({
+      actions: [
+        {
+          setAttribute: {
+            name: configuration,
+            variantId: Number.parseInt(variantId),
+            value: JSON.stringify({
+              id: result.data?.createOrUpdateCustomObject?.id,
+              typeId: 'key-value-document',
+            }),
+          },
+        },
+      ],
+      version: product.version,
+      id: product.id,
+    });
+    refetch();
+  };
+
   const attribute = variant.attributesRaw.find(
-    (attribute) => attribute.name === 'configuration'
+    (attribute) => attribute.name === configuration
   );
   if (!attribute) {
     return (
-      <ContentNotification type="info">
-        <Text.Body intlMessage={messages.noResults} />
-      </ContentNotification>
+      <Spacings.Stack alignItems={'flexStart'}>
+        <ContentNotification type="info">
+          <Text.Body>
+            <FormattedMessage
+              {...messages.missingAttribute}
+              values={{ attributeName: configuration }}
+            />
+          </Text.Body>
+        </ContentNotification>
+        <PrimaryButton
+          label={intl.formatMessage(messages.createAndLink, {
+            attributeName: configuration,
+          })}
+          onClick={onSubmit}
+        />
+      </Spacings.Stack>
     );
   }
   const referencedResource = attribute.referencedResource;

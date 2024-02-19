@@ -16,7 +16,10 @@ export const extractErrorFromGraphQlResponse = (graphQlResponse: unknown) => {
 };
 
 export const mapCustomObject = (customObject?: TCustomObject): Array<Row> => {
-  return (customObject?.value as unknown as Array<Row>) || [];
+  if (Array.isArray(customObject?.value)) {
+    return customObject?.value as Array<Row>;
+  }
+  return [];
 };
 
 export const customObjectToConfigRow = (

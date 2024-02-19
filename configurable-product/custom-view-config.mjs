@@ -7,7 +7,7 @@ const config = {
   env: {
     development: {
       initialProjectKey: '${env:INITIAL_PROJECT_KEY}',
-      hostUriPath: "/tech-sales-good-store/products/9c941cc8-d8ca-49ab-b0a6-252154e8dfdb/variants/1"
+      hostUriPath: "/tech-sales-good-store/products/4ea7b9e8-730f-413b-953a-9cad3278d7eb/variants/2"
     },
     production: {
       customViewId: '${env:CUSTOM_VIEW_ID}',

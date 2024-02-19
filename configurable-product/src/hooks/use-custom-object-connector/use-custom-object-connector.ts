@@ -14,9 +14,9 @@ import {
   TQuery_CustomObjectsArgs,
 } from '../../types/generated/ctp';
 import GetCustomObjects from './get-custom-objects.ctp.graphql';
-import GetCustomObject from './get-custom-object.rest.graphql';
-import DeleteCustomObject from './delete-custom-object.rest.graphql';
-import UpdateCustomObject from './update-custom-object.rest.graphql';
+import GetCustomObject from './get-custom-object.ctp.graphql';
+import DeleteCustomObject from './delete-custom-object.ctp.graphql';
+import UpdateCustomObject from './update-custom-object.ctp.graphql';
 import { extractErrorFromGraphQlResponse } from '../../helpers';
 
 type TUseCustomObjectsFetcher = (variables: TQuery_CustomObjectsArgs) => {

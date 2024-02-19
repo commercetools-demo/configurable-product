@@ -1,9 +1,16 @@
 query RetrieveCustomObject($id: String!) {
   product(id: $id) {
+    id
     key
+    productType {
+      key
+    }
+    version
     masterData {
-      current {
+      staged {
         allVariants {
+          sku
+          key
           id
           assets {
             sources {

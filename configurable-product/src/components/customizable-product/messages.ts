@@ -18,6 +18,38 @@ export default defineMessages({
     id: 'CustomizableProduct.variantsIndex',
     defaultMessage: 'Cannot find variantsIndex in URL',
   },
+  noProduct: {
+    id: 'CustomizableProduct.noProduct',
+    defaultMessage: 'Cannot find product with id: {id}.',
+  },
+  noVariant: {
+    id: 'CustomizableProduct.noVariant',
+    defaultMessage:
+      'Cannot find variant for product with id: {id} and variant id: {variantId}',
+  },
+  missingAttribute: {
+    id: 'CustomizableProduct.missingAttribute',
+    defaultMessage: 'Attribute with name "{attributeName}" cannot be found.',
+  },
+  wrongProductType: {
+    id: 'CustomizableProduct.wrongProductType',
+    defaultMessage:
+      'This Custom View only works for products of type {productType}.',
+  },
+  createAndLink: {
+    id: 'CustomizableProduct.createAndLink',
+    defaultMessage:
+      'Create and Link Custom Object to attribute with name "{attributeName}".',
+  },
+  editSuccess: {
+    id: 'EditCustomObject.form.message.edit.success',
+    defaultMessage: 'Your data has been saved.',
+  },
+  editError: {
+    id: 'EditCustomObject.form.message.edit.error',
+    defaultMessage:
+      'Something went wrong. Your row update was not saved. {message}',
+  },
   noResults: {
     id: 'CustomizableProduct.noResults',
     defaultMessage: 'No data found.',

@@ -1,1 +1,4 @@
-export { useRetrieveCustomObjectForProduct } from './use-product-connector';
+export {
+  useRetrieveCustomObjectForProduct,
+  useProductUpdater,
+} from './use-product-connector';
