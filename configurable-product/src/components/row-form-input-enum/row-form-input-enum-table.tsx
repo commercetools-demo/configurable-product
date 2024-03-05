@@ -10,7 +10,6 @@ import messages from './messages';
 import { useIntl } from 'react-intl';
 import memoize from 'memoize-one';
 import { useCustomViewContext } from '@commercetools-frontend/application-shell-connectors';
-import { TMergedContext } from '@commercetools-frontend/application-shell-connectors/dist/declarations/src/components/custom-view-context/custom-view-context';
 import TextInput from '@commercetools-uikit/text-input';
 import IconButton from '@commercetools-uikit/icon-button';
 import { createColumnDefinitions } from './utils';
@@ -121,11 +120,9 @@ export const RowFormInputEnumTable: FC<Props> = ({
   isLocalized = true,
 }) => {
   const intl = useIntl();
-  const { projectLanguages } = useCustomViewContext(
-    (context: TMergedContext) => ({
-      projectLanguages: context.project?.languages ?? [],
-    })
-  );
+  const { projectLanguages } = useCustomViewContext((context) => ({
+    projectLanguages: context.project?.languages ?? [],
+  }));
   const handleAddEnumClick = () => {
     const enumLanguages = getEnumLanguages(formik.values.values)(
       projectLanguages || []

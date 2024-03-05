@@ -26,7 +26,7 @@ export const customObjectToConfigRow = (
   projectLanguages: Array<string>,
   key?: string,
   customObject?: TCustomObject
-) => {
+): Row => {
   const template: Row = {
     key: key || '',
     values: [],
@@ -36,6 +36,10 @@ export const customObjectToConfigRow = (
       transformLocalizedFieldToLocalizedString([]) ?? {}
     ),
     text: LocalizedTextInput.createLocalizedString(
+      projectLanguages,
+      transformLocalizedFieldToLocalizedString([]) ?? {}
+    ),
+    unit: LocalizedTextInput.createLocalizedString(
       projectLanguages,
       transformLocalizedFieldToLocalizedString([]) ?? {}
     ),

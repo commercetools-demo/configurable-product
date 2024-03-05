@@ -92,9 +92,9 @@ const RowDetails: FC<Props> = ({ onClose }) => {
           domain: DOMAINS.SIDE,
           text: intl.formatMessage(messages.editError, { message: message }),
         });
-        refetch();
       },
     });
+    refetch();
   };
 
   const handleDelete = async () => {

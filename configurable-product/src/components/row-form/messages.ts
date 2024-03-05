@@ -6,11 +6,6 @@ export default defineMessages({
     description: 'Title for general information panel',
     defaultMessage: 'General Information',
   },
-  customObjectInformationTitle: {
-    id: 'CustomObject.form.panel.container.title',
-    description: 'Title for custom object information panel',
-    defaultMessage: 'Custom Object Information',
-  },
   containerTitle: {
     id: 'CustomObject.form.container.title',
     description: 'Title for container field',
@@ -19,7 +14,7 @@ export default defineMessages({
   keyTitle: {
     id: 'CustomObject.form.key.title',
     description: 'Title for key field',
-    defaultMessage: 'Custom object key',
+    defaultMessage: 'Row key',
   },
   titleTitle: {
     id: 'CustomObject.form.title.title',
@@ -61,12 +56,6 @@ export default defineMessages({
     description: '',
     defaultMessage: 'Attribute type',
   },
-  attributeTypeWarning: {
-    id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.attributeTypeWarning',
-    description: '',
-    defaultMessage:
-      'Once a product type attribute is saved, the type of attribute cannot be changed.',
-  },
   colorChooser: {
     id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.localizedLabel',
     defaultMessage: 'Color Chooser',
@@ -78,6 +67,10 @@ export default defineMessages({
   radio: {
     id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.localizedLabel',
     defaultMessage: 'Radio',
+  },
+  'int-range': {
+    id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.localizedLabel',
+    defaultMessage: 'Range',
   },
   requiredLabel: {
     id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.isRequired',

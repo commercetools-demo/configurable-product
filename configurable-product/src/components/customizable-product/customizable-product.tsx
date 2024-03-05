@@ -3,12 +3,11 @@ import Text from '@commercetools-uikit/text';
 import messages from './messages';
 import { useIntl } from 'react-intl';
 import { useCustomViewContext } from '@commercetools-frontend/application-shell-connectors';
-import { TMergedContext } from '@commercetools-frontend/application-shell-connectors/dist/declarations/src/components/custom-view-context/custom-view-context';
 import CustomizableProductEditor from './customizable-product-editor';
 
 const CustomizableProduct = () => {
   const intl = useIntl();
-  const { hostUrl } = useCustomViewContext((context: TMergedContext) => ({
+  const { hostUrl } = useCustomViewContext((context) => ({
     hostUrl: context.hostUrl,
   }));
   let productId: string | undefined = undefined;

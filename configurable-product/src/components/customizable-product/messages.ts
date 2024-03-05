@@ -73,6 +73,10 @@ export default defineMessages({
     id: 'ProjectSettings.ProductTypes.Details.labels.boolean',
     defaultMessage: 'Color',
   },
+  'attributeLabelint-range': {
+    id: 'ProjectSettings.ProductTypes.Details.labels.boolean',
+    defaultMessage: 'Integer Range',
+  },
   localizedLabel: {
     id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.localizedLabel',
     description: '',
