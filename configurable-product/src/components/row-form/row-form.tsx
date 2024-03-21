@@ -14,11 +14,13 @@ import LocalizedMultilineTextField from '@commercetools-uikit/localized-multilin
 import CheckboxInput from '@commercetools-uikit/checkbox-input';
 import { Item } from '../row-form-input-enum/row-form-input-enum-table';
 import RowFormInputRange from '../row-form-input-range/row-form-input-range';
+import RowFormStaticBundle from '../row-form-static-bundle/row-form-static-bundle';
+import { ProductEntry } from '../product-field/product-field';
 
 type Formik = ReturnType<typeof useFormik>;
 
 export type RowConfig = {
-  type?: 'color' | 'dropdown' | 'radio' | 'int-range';
+  type?: 'color' | 'dropdown' | 'radio' | 'int-range' | 'static-bundle';
   isRequired?: boolean;
 };
 
@@ -30,6 +32,7 @@ export type Row = {
   rangeMin?: number;
   rangeMax?: number;
   unit?: Record<string, string>;
+  products: Array<ProductEntry>;
   config: RowConfig;
 };
 
@@ -132,6 +135,10 @@ const RowForm: FC<Props> = ({ onSubmit, initialValues, children }) => {
               value: 'int-range',
               label: intl.formatMessage(messages['int-range']),
             },
+            {
+              value: 'static-bundle',
+              label: intl.formatMessage(messages.staticBundle),
+            },
           ]}
           value={formik.values.config?.type}
           isClearable={false}
@@ -168,6 +175,9 @@ const RowForm: FC<Props> = ({ onSubmit, initialValues, children }) => {
           <RowFormInputEnum formik={formik} />
         )}
         {formik.values.config.type === 'int-range' && <RowFormInputRange />}
+        {formik.values.config.type === 'static-bundle' && (
+          <RowFormStaticBundle />
+        )}
       </Spacings.Stack>
     </FormikProvider>
   );

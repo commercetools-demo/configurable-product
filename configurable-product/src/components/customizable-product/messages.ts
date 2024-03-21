@@ -77,6 +77,10 @@ export default defineMessages({
     id: 'ProjectSettings.ProductTypes.Details.labels.boolean',
     defaultMessage: 'Integer Range',
   },
+  'attributeLabelstatic-bundle': {
+    id: 'ProjectSettings.ProductTypes.Details.labels.boolean',
+    defaultMessage: 'Static Bundle',
+  },
   localizedLabel: {
     id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.localizedLabel',
     description: '',
