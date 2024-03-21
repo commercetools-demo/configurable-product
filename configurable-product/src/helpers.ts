@@ -43,6 +43,7 @@ export const customObjectToConfigRow = (
       projectLanguages,
       transformLocalizedFieldToLocalizedString([]) ?? {}
     ),
+    products: [{ product: undefined }],
   };
   let row = mapCustomObject(customObject).find((entry) => entry.key === key);
   return { ...template, ...(row || {}) };

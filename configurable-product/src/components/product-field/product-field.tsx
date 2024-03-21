@@ -25,7 +25,7 @@ export interface ProductValue extends Record<string, unknown> {
 
 export interface ProductEntry {
   product?: ProductValue;
-  quantity: string;
+  quantity?: string;
 }
 
 const hasError = (
@@ -68,6 +68,7 @@ interface ProductFieldProps {
   title?: string | React.ReactNode;
   hint?: string | React.ReactNode;
   isRequired?: boolean;
+  withQuantity?: boolean;
   onFocus?(...args: unknown[]): unknown;
   push(...args: unknown[]): unknown;
   remove(...args: unknown[]): unknown;
@@ -78,7 +79,7 @@ const ProductField: FC<ProductFieldProps> = ({
   hint,
   title,
   isRequired,
-  onFocus,
+  withQuantity = true,
   push,
   remove,
 }) => {
@@ -123,23 +124,24 @@ const ProductField: FC<ProductFieldProps> = ({
                 onBlur={formik.handleBlur}
               />
             </div>
-            <div className={styles['product-quantity']}>
-              <NumberInput
-                name={`${name}.${index}.${QUANTITY}`}
-                value={quantity || 0}
-                placeholder={intl.formatMessage(messages.quantityPlaceholder)}
-                hasError={hasError(
-                  formik.touched.products,
-                  formik.errors.products,
-                  index,
-                  QUANTITY
-                )}
-                min={1}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                onFocus={onFocus}
-              />
-            </div>
+            {withQuantity && (
+              <div className={styles['product-quantity']}>
+                <NumberInput
+                  name={`${name}.${index}.${QUANTITY}`}
+                  value={quantity || 0}
+                  placeholder={intl.formatMessage(messages.quantityPlaceholder)}
+                  hasError={hasError(
+                    formik.touched.products,
+                    formik.errors.products,
+                    index,
+                    QUANTITY
+                  )}
+                  min={1}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+              </div>
+            )}
             <IconButton
               data-testid={`remove-product.${index}`}
               icon={<CloseBoldIcon />}

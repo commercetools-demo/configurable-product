@@ -16,11 +16,18 @@ import { Item } from '../row-form-input-enum/row-form-input-enum-table';
 import RowFormInputRange from '../row-form-input-range/row-form-input-range';
 import RowFormStaticBundle from '../row-form-static-bundle/row-form-static-bundle';
 import { ProductEntry } from '../product-field/product-field';
+import RowFormRangeBundle from '../row-form-range-bundle/row-form-range-bundle';
 
 type Formik = ReturnType<typeof useFormik>;
 
 export type RowConfig = {
-  type?: 'color' | 'dropdown' | 'radio' | 'int-range' | 'static-bundle';
+  type?:
+    | 'color'
+    | 'dropdown'
+    | 'radio'
+    | 'int-range'
+    | 'static-bundle'
+    | 'range-bundle';
   isRequired?: boolean;
 };
 
@@ -139,6 +146,10 @@ const RowForm: FC<Props> = ({ onSubmit, initialValues, children }) => {
               value: 'static-bundle',
               label: intl.formatMessage(messages.staticBundle),
             },
+            {
+              value: 'range-bundle',
+              label: intl.formatMessage(messages.rangeBundle),
+            },
           ]}
           value={formik.values.config?.type}
           isClearable={false}
@@ -178,6 +189,7 @@ const RowForm: FC<Props> = ({ onSubmit, initialValues, children }) => {
         {formik.values.config.type === 'static-bundle' && (
           <RowFormStaticBundle />
         )}
+        {formik.values.config.type === 'range-bundle' && <RowFormRangeBundle />}
       </Spacings.Stack>
     </FormikProvider>
   );

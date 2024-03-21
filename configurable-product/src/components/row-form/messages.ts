@@ -76,6 +76,10 @@ export default defineMessages({
     id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.localizedLabel',
     defaultMessage: 'Static Bundle',
   },
+  rangeBundle: {
+    id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.localizedLabel',
+    defaultMessage: 'Range Bundle',
+  },
   requiredLabel: {
     id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.isRequired',
     defaultMessage: 'is Required',
