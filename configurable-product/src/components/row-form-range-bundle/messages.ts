@@ -9,7 +9,7 @@ export default defineMessages({
   bundleProductsDescription: {
     id: 'StaticBundle.form.products.description',
     description: 'Description for bundle products field',
-    defaultMessage: 'Select variants to include in bundle.',
+    defaultMessage: 'Select variants and quantity to include in bundle.',
   },
   bundleQuantityTitle: {
     id: 'DynamicBundle.form.quantity.title',

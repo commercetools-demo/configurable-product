@@ -49,7 +49,6 @@ const RowFormRangeBundle = () => {
             title={intl.formatMessage(messages.bundleProductsTitle)}
             hint={intl.formatMessage(messages.bundleProductsDescription)}
             isRequired={true}
-            withQuantity={false}
             push={push}
             remove={remove}
           />
