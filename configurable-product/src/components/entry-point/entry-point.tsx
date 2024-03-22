@@ -37,6 +37,9 @@ const restLink = new RestLink({
 const configureApollo = () =>
   createApolloClient({
     restLink: restLink,
+    cache: {
+      typePolicies: { ProductVariant: { keyFields: ['id', 'key', 'sku'] } },
+    },
   });
 
 const EntryPoint = () => (

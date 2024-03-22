@@ -121,13 +121,14 @@ const ProductSearchInput: FC<ProductSearchInputProps> = ({
     },
     { locale: string; text: string; filter: string }
   >(ProductSearch, {
+    fetchPolicy: 'cache-and-network',
     variables: {
       locale: dataLocale,
       text: '',
       filter,
     },
+    skip: true,
     context: {
-      skipGraphQlTargetCheck: true,
       target: 'ctp',
     },
   });
