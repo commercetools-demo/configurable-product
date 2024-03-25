@@ -17,6 +17,8 @@ import RowFormInputRange from '../row-form-input-range/row-form-input-range';
 import RowFormStaticBundle from '../row-form-static-bundle/row-form-static-bundle';
 import { ProductEntry } from '../product-field/product-field';
 import RowFormRangeBundle from '../row-form-range-bundle/row-form-range-bundle';
+import { CategoryEntry } from '../category-field/category-field';
+import RowFormDynamicBundle from '../row-form-dynamic-bundle/row-form-dynamic-bundle';
 
 type Formik = ReturnType<typeof useFormik>;
 
@@ -27,6 +29,7 @@ export type RowConfig = {
     | 'radio'
     | 'int-range'
     | 'static-bundle'
+    | 'dynamic-bundle'
     | 'range-bundle';
   isRequired?: boolean;
 };
@@ -40,6 +43,7 @@ export type Row = {
   rangeMax?: number;
   unit?: Record<string, string>;
   products: Array<ProductEntry>;
+  categories: Array<CategoryEntry>;
   config: RowConfig;
 };
 
@@ -147,6 +151,10 @@ const RowForm: FC<Props> = ({ onSubmit, initialValues, children }) => {
               label: intl.formatMessage(messages.staticBundle),
             },
             {
+              value: 'dynamic-bundle',
+              label: intl.formatMessage(messages.dynamicBundle),
+            },
+            {
               value: 'range-bundle',
               label: intl.formatMessage(messages.rangeBundle),
             },
@@ -188,6 +196,9 @@ const RowForm: FC<Props> = ({ onSubmit, initialValues, children }) => {
         {formik.values.config.type === 'int-range' && <RowFormInputRange />}
         {formik.values.config.type === 'static-bundle' && (
           <RowFormStaticBundle />
+        )}
+        {formik.values.config.type === 'dynamic-bundle' && (
+          <RowFormDynamicBundle />
         )}
         {formik.values.config.type === 'range-bundle' && <RowFormRangeBundle />}
       </Spacings.Stack>

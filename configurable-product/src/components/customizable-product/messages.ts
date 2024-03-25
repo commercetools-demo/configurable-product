@@ -81,6 +81,14 @@ export default defineMessages({
     id: 'ProjectSettings.ProductTypes.Details.labels.boolean',
     defaultMessage: 'Static Bundle',
   },
+  'attributeLabeldynamic-bundle': {
+    id: 'ProjectSettings.ProductTypes.Details.labels.boolean',
+    defaultMessage: 'Dynamic Bundle',
+  },
+  'attributeLabelrange-bundle': {
+    id: 'ProjectSettings.ProductTypes.Details.labels.boolean',
+    defaultMessage: 'Range Bundle',
+  },
   localizedLabel: {
     id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.localizedLabel',
     description: '',
