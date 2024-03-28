@@ -1,5 +1,4 @@
 import { FormattedMessage, useIntl } from 'react-intl';
-import get from 'lodash/get';
 import CheckboxInput from '@commercetools-uikit/checkbox-input';
 import FieldLabel from '@commercetools-uikit/field-label';
 import NumberInput from '@commercetools-uikit/number-input';
@@ -14,18 +13,23 @@ import { useFormikContext } from 'formik';
 import { Row } from '../row-form/row-form';
 import React, { FC } from 'react';
 import { FormikErrors, FormikTouched } from 'formik/dist/types';
+import compact from 'lodash/compact';
+import get from 'lodash/get';
+import uniq from 'lodash/uniq';
+import { ErrorMessage } from '@commercetools-uikit/messages';
+import { renderCategoryError } from '../row-form/validation';
 
 export interface CategoryValue extends Record<string, unknown> {
   id?: string;
   name: string;
 }
 
-export interface CategoryEntry {
+export type CategoryEntry = {
   category?: CategoryValue | null;
   minQuantity?: string;
   maxQuantity?: string;
   additionalCharge?: boolean;
-}
+};
 
 const CATEGORY = 'category';
 const FIELD_ADDITIONAL_CHARGE = 'additionalCharge';
@@ -40,9 +44,14 @@ const hasError = (
     | Array<FormikErrors<CategoryEntry>>
     | undefined,
   index: number,
-  field: string
-) =>
-  !!get(touched, `[${index}].${field}`) && !!get(errors, `[${index}].${field}`);
+  field: keyof CategoryEntry
+) => {
+  return (
+    !!touched?.[index]?.[field] &&
+    Array.isArray(errors) &&
+    !!(errors as Array<FormikErrors<CategoryEntry>>)?.[index]?.[field]
+  );
+};
 
 /*
  * Retrieve the unique (`uniq`), non-null (`compact`) errors for the inputs of each
@@ -52,29 +61,30 @@ const hasError = (
  * inputs are required. If both have been touched, only one "required" error message
  * will be shown.
  */
-// const getErrors = (
-//   touched: Array<FormikTouched<CategoryEntry>> | undefined,
-//   errors:
-//     | string
-//     | Array<string>
-//     | Array<FormikErrors<CategoryEntry>>
-//     | undefined
-// ) =>
-//   touched &&
-//   errors &&
-//   touched.reduce((errs, item, index) => {
-//     const getError = (field) =>
-//       item && item[field] ? get(errors, `[${index}].${field}`) : null;
-//
-//     return uniq([
-//       ...errs,
-//       ...compact([
-//         getError(CATEGORY),
-//         getError(FIELD_MIN_QUANTITY),
-//         getError(FIELD_MAX_QUANTITY),
-//       ]),
-//     ]);
-//   }, []);
+const getErrors = (
+  touched: Array<FormikTouched<CategoryEntry>> | undefined,
+  errors:
+    | string
+    | Array<string>
+    | Array<FormikErrors<CategoryEntry>>
+    | undefined
+) =>
+  touched &&
+  errors &&
+  touched.reduce((errs: Array<any>, item, index) => {
+    const getError = (field: any) =>
+      // @ts-ignore
+      item && item[field] ? get(errors, `[${index}].${field}`) : null;
+
+    return uniq([
+      ...errs,
+      ...compact([
+        getError(CATEGORY),
+        getError(FIELD_MIN_QUANTITY),
+        getError(FIELD_MAX_QUANTITY),
+      ]),
+    ]);
+  }, []);
 
 interface CategoryFieldProps {
   name?: string;
@@ -96,7 +106,12 @@ const CategoryField: FC<CategoryFieldProps> = ({
 }) => {
   const intl = useIntl();
   const formik = useFormikContext<Row>();
-  // const fieldErrors = getErrors(formik.touched, formik.errors);
+  const fieldErrors = getErrors(
+    formik.touched.categories,
+    formik.errors.categories
+  );
+
+  console.log(fieldErrors);
 
   return (
     <Spacings.Stack scale="s">
@@ -198,13 +213,19 @@ const CategoryField: FC<CategoryFieldProps> = ({
             </Spacings.Inline>
           )
         )}
-        {/*{fieldErrors && (*/}
-        {/*  <>*/}
-        {/*    {fieldErrors.map((error, index) => (*/}
-        {/*      <ErrorMessage key={index}>{error}</ErrorMessage>*/}
-        {/*    ))}*/}
-        {/*  </>*/}
-        {/*)}*/}
+        {fieldErrors && (
+          <>
+            {fieldErrors.map((error, index) => {
+              console.log(Object.keys(error)[0]);
+
+              return (
+                <ErrorMessage key={index}>
+                  {renderCategoryError(Object.keys(error)[0])}
+                </ErrorMessage>
+              );
+            })}
+          </>
+        )}
       </Spacings.Stack>
     </Spacings.Stack>
   );

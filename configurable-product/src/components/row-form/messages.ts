@@ -100,4 +100,29 @@ export default defineMessages({
       'The error message displayed when a user attempts to add an attribute with empty values for both key and label(s) of the first enum value',
     defaultMessage: 'Add enum key and/or label',
   },
+  quantityError: {
+    id: 'DynamicBundle.form.errors.quantity.one',
+    description: 'Error message for quantity',
+    defaultMessage: 'Quantity must be 1 or greater.',
+  },
+  zeroQuantityError: {
+    id: 'DynamicBundle.form.errors.quantity.zero',
+    description: 'Error message for quantity',
+    defaultMessage: 'Quantity must be 0 or greater.',
+  },
+  integerError: {
+    id: 'DynamicBundle.form.errors.integer',
+    description: 'Error message for quantity as an integer',
+    defaultMessage: 'Quantity must be an integer.',
+  },
+  minGreaterThanMaxError: {
+    id: 'DynamicBundle.form.errors.maxGreaterThanMin',
+    description: 'Error message for maximum quantity',
+    defaultMessage: 'Maximum quantity must exceed minimum quantity.',
+  },
+  missingRequiredField: {
+    id: 'DynamicBundle.form.errors.missingRequiredField',
+    description: 'Error message for missing required value',
+    defaultMessage: 'This field is required. Provide a value.',
+  },
 });

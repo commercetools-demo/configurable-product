@@ -3,9 +3,14 @@ import ProductField from '../product-field/product-field';
 import { FormattedMessage, useIntl } from 'react-intl';
 import messages from './messages';
 import NumberField from '@commercetools-uikit/number-field';
-import { Row, TErrors } from '../row-form/row-form';
+import { Row } from '../row-form/row-form';
 import FieldLabel from '@commercetools-uikit/field-label';
 import Spacings from '@commercetools-uikit/spacings';
+import {
+  renderRangeMaxError,
+  renderRangeMinError,
+  TErrors,
+} from '../row-form/validation';
 
 const PRODUCTS = 'products';
 const RowFormRangeBundle = () => {
@@ -27,6 +32,8 @@ const RowFormRangeBundle = () => {
             errors={NumberField.toFieldErrors<TErrors>(formik.errors).rangeMin}
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
+            touched={formik.touched.rangeMin}
+            renderError={renderRangeMinError}
           />
           <NumberField
             title={intl.formatMessage(messages.bundleMaxQuantityPlaceholder)}
@@ -37,6 +44,8 @@ const RowFormRangeBundle = () => {
             errors={NumberField.toFieldErrors<TErrors>(formik.errors).rangeMax}
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
+            touched={formik.touched.rangeMax}
+            renderError={renderRangeMaxError}
           />
         </Spacings.Inline>
       </Spacings.Stack>

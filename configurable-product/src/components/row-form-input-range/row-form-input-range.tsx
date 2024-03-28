@@ -4,10 +4,11 @@ import messages from './messages';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Spacings from '@commercetools-uikit/spacings';
 import NumberField from '@commercetools-uikit/number-field';
-import { Row, TErrors } from '../row-form/row-form';
+import { Row } from '../row-form/row-form';
 import LocalizedTextField from '@commercetools-uikit/localized-text-field';
 import { useCustomViewContext } from '@commercetools-frontend/application-shell-connectors';
 import { ErrorMessage } from '@commercetools-uikit/messages';
+import { TErrors } from '../row-form/validation';
 
 const RowFormInputRange = () => {
   const formik = useFormikContext<Row>();

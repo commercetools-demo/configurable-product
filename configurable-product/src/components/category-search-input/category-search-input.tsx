@@ -52,7 +52,6 @@ export const CategorySearchSingleValue: FC<SingleValueProps<CategoryValue>> = (
       target: GRAPHQL_TARGETS.COMMERCETOOLS_PLATFORM,
     },
   });
-  console.log(props.data);
   if (!props.data || !props.data.id) {
     return <AsyncSelectInput.SingleValue {...props} />;
   }
@@ -142,7 +141,6 @@ const CategorySearchInput: FC<Props> = ({
         };
       });
     });
-
   return (
     <AsyncSelectInput
       name={name}

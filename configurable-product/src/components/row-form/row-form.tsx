@@ -1,11 +1,9 @@
 import { FC, ReactElement, JSX } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useFormik, FormikErrors, FormikProvider } from 'formik';
+import { useFormik, FormikProvider } from 'formik';
 import messages from './messages';
 import Spacings from '@commercetools-uikit/spacings';
 import TextField from '@commercetools-uikit/text-field';
-import TextInput from '@commercetools-uikit/text-input';
-import omitEmpty from 'omit-empty-es';
 import SelectField from '@commercetools-uikit/select-field';
 import { useCustomViewContext } from '@commercetools-frontend/application-shell-connectors';
 import { RowFormInputEnum } from '../row-form-input-enum/row-form-input-enum';
@@ -19,6 +17,7 @@ import { ProductEntry } from '../product-field/product-field';
 import RowFormRangeBundle from '../row-form-range-bundle/row-form-range-bundle';
 import { CategoryEntry } from '../category-field/category-field';
 import RowFormDynamicBundle from '../row-form-dynamic-bundle/row-form-dynamic-bundle';
+import { validate } from './validation';
 
 type Formik = ReturnType<typeof useFormik>;
 
@@ -54,31 +53,6 @@ type FormProps = {
   isSubmitting: Formik['isSubmitting'];
   submitForm: Formik['handleSubmit'];
   handleReset: Formik['handleReset'];
-};
-
-export type TErrors = {
-  key: { missing?: boolean; keyHint?: boolean };
-  rangeMin: {};
-  rangeMax: {};
-};
-
-const validate = (formikValues: Row): FormikErrors<Row> => {
-  const errors: TErrors = {
-    key: {},
-    rangeMin: {},
-    rangeMax: {},
-  };
-
-  if (!formikValues.key || TextInput.isEmpty(formikValues.key)) {
-    errors.key.missing = true;
-  }
-  if (
-    formikValues.key &&
-    (formikValues.key.length < 2 || formikValues.key.length > 256)
-  ) {
-    errors.key.keyHint = true;
-  }
-  return omitEmpty(errors);
 };
 
 type Props = {
