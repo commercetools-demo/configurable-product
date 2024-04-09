@@ -13,11 +13,10 @@ import { useFormikContext } from 'formik';
 import { Row } from '../row-form/row-form';
 import React, { FC } from 'react';
 import { FormikErrors, FormikTouched } from 'formik/dist/types';
-import compact from 'lodash/compact';
-import get from 'lodash/get';
 import uniq from 'lodash/uniq';
 import { ErrorMessage } from '@commercetools-uikit/messages';
 import { renderCategoryError } from '../row-form/validation';
+import { notEmpty } from '../../helpers';
 
 export interface CategoryValue extends Record<string, unknown> {
   id?: string;
@@ -35,6 +34,21 @@ const CATEGORY = 'category';
 const FIELD_ADDITIONAL_CHARGE = 'additionalCharge';
 const FIELD_MIN_QUANTITY = 'minQuantity';
 const FIELD_MAX_QUANTITY = 'maxQuantity';
+
+const getError = (
+  errors:
+    | string
+    | Array<string>
+    | Array<FormikErrors<CategoryEntry>>
+    | undefined,
+  field: keyof CategoryEntry,
+  item: FormikTouched<CategoryEntry>,
+  index: number
+): { [key: string]: boolean } =>
+  // @ts-ignore
+  item && item[field]
+    ? (errors as Array<FormikErrors<CategoryEntry>>)?.[index]?.[field]
+    : null;
 
 const hasError = (
   touched: Array<FormikTouched<CategoryEntry>> | undefined,
@@ -68,23 +82,23 @@ const getErrors = (
     | Array<string>
     | Array<FormikErrors<CategoryEntry>>
     | undefined
-) =>
-  touched &&
-  errors &&
-  touched.reduce((errs: Array<any>, item, index) => {
-    const getError = (field: any) =>
-      // @ts-ignore
-      item && item[field] ? get(errors, `[${index}].${field}`) : null;
-
-    return uniq([
-      ...errs,
-      ...compact([
-        getError(CATEGORY),
-        getError(FIELD_MIN_QUANTITY),
-        getError(FIELD_MAX_QUANTITY),
-      ]),
-    ]);
-  }, []);
+) => {
+  let result: Array<{ [key: string]: boolean }> = [];
+  if (touched && errors) {
+    result = touched.reduce<Array<{ [key: string]: boolean }>>(
+      (errs, item, index) => {
+        let array: Array<{ [key: string]: boolean }> = [
+          getError(errors, CATEGORY, item, index),
+          getError(errors, FIELD_MIN_QUANTITY, item, index),
+          getError(errors, FIELD_MAX_QUANTITY, item, index),
+        ].filter(notEmpty);
+        return uniq([...errs, ...array]);
+      },
+      []
+    );
+  }
+  return result;
+};
 
 interface CategoryFieldProps {
   name?: string;
@@ -110,8 +124,6 @@ const CategoryField: FC<CategoryFieldProps> = ({
     formik.touched.categories,
     formik.errors.categories
   );
-
-  console.log(fieldErrors);
 
   return (
     <Spacings.Stack scale="s">
@@ -216,8 +228,6 @@ const CategoryField: FC<CategoryFieldProps> = ({
         {fieldErrors && (
           <>
             {fieldErrors.map((error, index) => {
-              console.log(Object.keys(error)[0]);
-
               return (
                 <ErrorMessage key={index}>
                   {renderCategoryError(Object.keys(error)[0])}
