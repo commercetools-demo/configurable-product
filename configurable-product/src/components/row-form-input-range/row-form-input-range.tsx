@@ -7,8 +7,11 @@ import NumberField from '@commercetools-uikit/number-field';
 import { Row } from '../row-form/row-form';
 import LocalizedTextField from '@commercetools-uikit/localized-text-field';
 import { useCustomViewContext } from '@commercetools-frontend/application-shell-connectors';
-import { ErrorMessage } from '@commercetools-uikit/messages';
-import { TErrors } from '../row-form/validation';
+import {
+  renderRangeMaxError,
+  renderRangeMinError,
+  TErrors,
+} from '../row-form/validation';
 
 const RowFormInputRange = () => {
   const formik = useFormikContext<Row>();
@@ -27,20 +30,24 @@ const RowFormInputRange = () => {
           name={'rangeMin'}
           min={1}
           step={1}
-          value={formik.values.rangeMin || 1}
+          value={formik.values.rangeMin || ''}
           errors={NumberField.toFieldErrors<TErrors>(formik.errors).rangeMin}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
+          touched={formik.touched.rangeMin}
+          renderError={renderRangeMinError}
         />
         <NumberField
           title={intl.formatMessage(messages.bundleMaxQuantityPlaceholder)}
           name={'rangeMax'}
           min={1}
           step={1}
-          value={formik.values.rangeMax || 1}
+          value={formik.values.rangeMax || ''}
           errors={NumberField.toFieldErrors<TErrors>(formik.errors).rangeMax}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
+          touched={formik.touched.rangeMax}
+          renderError={renderRangeMaxError}
         />
         <LocalizedTextField
           name="unit"
@@ -48,15 +55,11 @@ const RowFormInputRange = () => {
           value={formik.values.unit || {}}
           selectedLanguage={dataLocale}
           onBlur={formik.handleBlur}
+          touched={formik.touched.unit}
           onChange={formik.handleChange}
+          errors={LocalizedTextField.toFieldErrors<TErrors>(formik.errors).unit}
         />
       </Spacings.Inline>
-      {formik.errors.rangeMin && (
-        <ErrorMessage>{formik.errors.rangeMin || ''}</ErrorMessage>
-      )}
-      {formik.errors.rangeMax && (
-        <ErrorMessage>{formik.errors.rangeMax}</ErrorMessage>
-      )}
     </Spacings.Stack>
   );
 };

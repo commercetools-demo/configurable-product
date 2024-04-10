@@ -46,8 +46,9 @@ type TCategoryError = {
 export type TErrors = {
   key: { missing?: boolean; keyHint?: boolean };
   title: { missing?: boolean };
-  rangeMin: { quantity?: true; minGreaterThanMax?: true };
-  rangeMax: { quantity?: true };
+  unit: { missing?: boolean };
+  rangeMin: { quantity?: true; minGreaterThanMax?: true; missing?: boolean };
+  rangeMax: { quantity?: true; missing?: boolean };
   categories: Array<TCategoryError | undefined>;
 };
 
@@ -55,6 +56,7 @@ export const validate = (formikValues: Row): FormikErrors<Row> => {
   const errors: TErrors = {
     key: {},
     title: {},
+    unit: {},
     rangeMin: {},
     rangeMax: {},
     categories: [],
@@ -90,6 +92,23 @@ export const validate = (formikValues: Row): FormikErrors<Row> => {
       formikValues.rangeMin > formikValues.rangeMax
     ) {
       errors.rangeMin.minGreaterThanMax = true;
+    }
+  }
+
+  //validate ranges
+  if (formikValues.config.type === 'int-range') {
+    if (!formikValues.rangeMin) {
+      errors.rangeMin.missing = true;
+    }
+
+    //rangeMax validation
+    if (!formikValues.rangeMax) {
+      errors.rangeMax.missing = true;
+    }
+
+    //unit may not be empty
+    if (!formikValues.unit || LocalizedTextInput.isEmpty(formikValues.unit)) {
+      errors.unit.missing = true;
     }
   }
 
