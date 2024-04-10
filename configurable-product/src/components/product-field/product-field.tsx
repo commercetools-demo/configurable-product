@@ -30,11 +30,11 @@ export interface ProductEntry {
   quantity?: string;
 }
 
-function toFieldErrors(
+const toFieldErrors = (
   errors: string | string[] | FormikErrors<ProductEntry>[] | undefined
-) {
+) => {
   return errors as TProductErrors | undefined;
-}
+};
 
 const getError = (
   errors: TProductErrors | undefined,

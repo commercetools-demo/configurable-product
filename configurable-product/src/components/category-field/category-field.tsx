@@ -13,9 +13,8 @@ import { useFormikContext } from 'formik';
 import { Row } from '../row-form/row-form';
 import React, { FC } from 'react';
 import { FormikErrors, FormikTouched } from 'formik/dist/types';
-import uniq from 'lodash/uniq';
 import { ErrorMessage } from '@commercetools-uikit/messages';
-import { renderCategoryError } from '../row-form/validation';
+import { renderCategoryError, TCategoryErrors } from '../row-form/validation';
 import { notEmpty } from '../../helpers';
 
 export interface CategoryValue extends Record<string, unknown> {
@@ -35,53 +34,40 @@ const FIELD_ADDITIONAL_CHARGE = 'additionalCharge';
 const FIELD_MIN_QUANTITY = 'minQuantity';
 const FIELD_MAX_QUANTITY = 'maxQuantity';
 
+const toFieldErrors = (
+  errors: string | string[] | FormikErrors<CategoryEntry>[] | undefined
+) => {
+  return errors as TCategoryErrors | undefined;
+};
 const getError = (
-  errors:
-    | string
-    | Array<string>
-    | Array<FormikErrors<CategoryEntry>>
-    | undefined,
+  errors: TCategoryErrors | undefined,
   field: keyof CategoryEntry,
   item: FormikTouched<CategoryEntry>,
   index: number
-): { [key: string]: boolean } =>
-  // @ts-ignore
-  item && item[field]
-    ? (errors as Array<FormikErrors<CategoryEntry>>)?.[index]?.[field]
-    : null;
+): { [key: string]: boolean } | undefined => {
+  return item && item[field] ? errors?.[index]?.[field] : undefined;
+};
 
 const hasError = (
   touched: Array<FormikTouched<CategoryEntry>> | undefined,
-  errors:
-    | string
-    | Array<string>
-    | Array<FormikErrors<CategoryEntry>>
-    | undefined,
+  errors: TCategoryErrors | undefined,
   index: number,
   field: keyof CategoryEntry
-) => {
-  return (
-    !!touched?.[index]?.[field] &&
-    Array.isArray(errors) &&
-    !!(errors as Array<FormikErrors<CategoryEntry>>)?.[index]?.[field]
-  );
+): boolean => {
+  if (touched?.[index] && Object.keys(touched?.[index]).indexOf(field) >= 0) {
+    const isTouched = Object.values(touched?.[index])[
+      Object.keys(touched?.[index]).indexOf(field)
+    ];
+    if (isTouched && errors?.[index]?.[field]) {
+      return true;
+    }
+  }
+  return false;
 };
 
-/*
- * Retrieve the unique (`uniq`), non-null (`compact`) errors for the inputs of each
- * value in the field based on the currently touched inputs.
- *
- * Example: The field contains two categories inputs without values. The category
- * inputs are required. If both have been touched, only one "required" error message
- * will be shown.
- */
 const getErrors = (
   touched: Array<FormikTouched<CategoryEntry>> | undefined,
-  errors:
-    | string
-    | Array<string>
-    | Array<FormikErrors<CategoryEntry>>
-    | undefined
+  errors: TCategoryErrors | undefined
 ) => {
   let result: Array<{ [key: string]: boolean }> = [];
   if (touched && errors) {
@@ -92,7 +78,7 @@ const getErrors = (
           getError(errors, FIELD_MIN_QUANTITY, item, index),
           getError(errors, FIELD_MAX_QUANTITY, item, index),
         ].filter(notEmpty);
-        return uniq([...errs, ...array]);
+        return [...errs, ...array];
       },
       []
     );
@@ -120,10 +106,8 @@ const CategoryField: FC<CategoryFieldProps> = ({
 }) => {
   const intl = useIntl();
   const formik = useFormikContext<Row>();
-  const fieldErrors = getErrors(
-    formik.touched.categories,
-    formik.errors.categories
-  );
+  const categoryErrors = toFieldErrors(formik.errors.categories);
+  const fieldErrors = getErrors(formik.touched.categories, categoryErrors);
 
   return (
     <Spacings.Stack scale="s">
@@ -159,7 +143,7 @@ const CategoryField: FC<CategoryFieldProps> = ({
                   showProductCount
                   hasError={hasError(
                     formik.touched.categories,
-                    formik.errors.categories,
+                    categoryErrors,
                     index,
                     CATEGORY
                   )}
@@ -174,7 +158,7 @@ const CategoryField: FC<CategoryFieldProps> = ({
                   )}
                   hasError={hasError(
                     formik.touched.categories,
-                    formik.errors.categories,
+                    categoryErrors,
                     index,
                     FIELD_MIN_QUANTITY
                   )}
@@ -193,7 +177,7 @@ const CategoryField: FC<CategoryFieldProps> = ({
                   )}
                   hasError={hasError(
                     formik.touched.categories,
-                    formik.errors.categories,
+                    categoryErrors,
                     index,
                     FIELD_MAX_QUANTITY
                   )}

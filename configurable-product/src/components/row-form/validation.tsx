@@ -50,6 +50,7 @@ type TCategoryError = {
   category: { missing?: boolean };
   minQuantity: { quantity?: true; minGreaterThanMax?: true };
   maxQuantity: { quantity?: true };
+  additionalCharge: {};
 };
 
 export type TProductError = {
@@ -57,6 +58,7 @@ export type TProductError = {
   quantity: { quantity?: true; missing?: boolean };
 };
 
+export type TCategoryErrors = { [key: number]: TCategoryError };
 export type TProductErrors = { [key: number]: TProductError };
 
 export type TErrors = {
@@ -65,7 +67,7 @@ export type TErrors = {
   unit: { missing?: boolean };
   rangeMin: { quantity?: true; minGreaterThanMax?: true; missing?: boolean };
   rangeMax: { quantity?: true; missing?: boolean };
-  categories: Array<TCategoryError | undefined>;
+  categories: TCategoryErrors;
   products: TProductErrors;
 };
 
@@ -76,7 +78,7 @@ export const validate = (formikValues: Row): FormikErrors<Row> => {
     unit: {},
     rangeMin: {},
     rangeMax: {},
-    categories: [],
+    categories: {},
     products: {},
   };
 
@@ -136,11 +138,12 @@ export const validate = (formikValues: Row): FormikErrors<Row> => {
     formikValues.categories &&
     Array.isArray(formikValues.categories)
   ) {
-    errors.categories = formikValues.categories.map((value) => {
+    formikValues.categories.forEach((value, index) => {
       let error: TCategoryError = {
         category: {},
         minQuantity: {},
         maxQuantity: {},
+        additionalCharge: {},
       };
       if (!value.category || !value.category.id) {
         error.category.missing = true;
@@ -162,8 +165,9 @@ export const validate = (formikValues: Row): FormikErrors<Row> => {
           error.minQuantity.minGreaterThanMax = true;
         }
       }
-      let cleanedError = omitEmpty<TCategoryError>(error);
-      return Object.keys(cleanedError).length === 0 ? undefined : cleanedError;
+      if (Object.keys(error).length !== 0) {
+        errors.categories[index] = error;
+      }
     });
   }
 
@@ -188,21 +192,11 @@ export const validate = (formikValues: Row): FormikErrors<Row> => {
         error.quantity.quantity = true;
       }
 
-      let cleanedError = error;
-      if (Object.keys(cleanedError).length !== 0) {
-        errors.products[index] = cleanedError;
+      if (Object.keys(error).length !== 0) {
+        errors.products[index] = error;
       }
     });
   }
 
-  let result = omitEmpty<FormikErrors<Row>, TErrors>(errors);
-
-  if (errors.categories.length > 0) {
-    result = {
-      ...result,
-      // @ts-ignore
-      categories: errors.categories,
-    };
-  }
-  return result;
+  return omitEmpty<FormikErrors<Row>, TErrors>(errors);
 };
