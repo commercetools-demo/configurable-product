@@ -37,10 +37,24 @@ export const renderCategoryError = (key: string) => {
   }
 };
 
+export const renderProductError = (key: string) => {
+  switch (key) {
+    case 'missing':
+      return <FormattedMessage {...messages.missingRequiredField} />;
+    default:
+      return null;
+  }
+};
+
 type TCategoryError = {
   category: { missing?: boolean };
   minQuantity: { quantity?: true; minGreaterThanMax?: true };
   maxQuantity: { quantity?: true };
+};
+
+export type TProductError = {
+  product: { missing?: boolean };
+  quantity: { quantity?: true; missing?: boolean };
 };
 
 export type TErrors = {
@@ -50,6 +64,7 @@ export type TErrors = {
   rangeMin: { quantity?: true; minGreaterThanMax?: true; missing?: boolean };
   rangeMax: { quantity?: true; missing?: boolean };
   categories: Array<TCategoryError | undefined>;
+  products: { [key: number]: TProductError };
 };
 
 export const validate = (formikValues: Row): FormikErrors<Row> => {
@@ -60,6 +75,7 @@ export const validate = (formikValues: Row): FormikErrors<Row> => {
     rangeMin: {},
     rangeMax: {},
     categories: [],
+    products: {},
   };
 
   //Key validation
@@ -149,7 +165,35 @@ export const validate = (formikValues: Row): FormikErrors<Row> => {
     });
   }
 
+  //product validation only if type is static-bundle
+  if (
+    formikValues.config.type === 'static-bundle' &&
+    formikValues.products &&
+    Array.isArray(formikValues.products)
+  ) {
+    formikValues.products.forEach((value, index) => {
+      let error: TProductError = {
+        product: {},
+        quantity: {},
+      };
+      if (!value.product || !value.product.id) {
+        error.product.missing = true;
+      }
+      if (!value.quantity) {
+        error.quantity.missing = true;
+      } else if (Number.parseInt(value.quantity) < 1) {
+        error.quantity.quantity = true;
+      }
+
+      let cleanedError = error;
+      if (Object.keys(cleanedError).length !== 0) {
+        errors.products[index] = cleanedError;
+      }
+    });
+  }
+
   let result = omitEmpty<FormikErrors<Row>, TErrors>(errors);
+
   if (errors.categories.length > 0) {
     result = {
       ...result,

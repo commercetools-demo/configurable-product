@@ -75,12 +75,9 @@ interface ProductSearchInputProps {
   value?: ProductValue;
   filter?: string;
   placeholder?: string;
-  touched?: boolean;
-  errors?: object;
   hasError?: boolean;
   onBlur?(...args: unknown[]): unknown;
   onChange(...args: unknown[]): unknown;
-  renderError?(...args: unknown[]): unknown;
 }
 
 type ProductVariantResponse = {
@@ -101,12 +98,9 @@ const ProductSearchInput: FC<ProductSearchInputProps> = ({
   value,
   filter = '',
   placeholder,
-  touched,
-  errors,
   hasError,
   onBlur,
   onChange,
-  renderError,
 }) => {
   const { dataLocale } = useCustomViewContext((context) => ({
     dataLocale: context.dataLocale ?? '',
@@ -189,11 +183,8 @@ const ProductSearchInput: FC<ProductSearchInputProps> = ({
         DropdownIndicator: () => <SearchIcon color="primary" />,
       }}
       hasError={hasError}
-      touched={touched}
-      errors={errors}
       onBlur={onBlur}
       onChange={onChange}
-      renderError={renderError}
       noOptionsMessage={() => intl.formatMessage(messages.noProductsFound)}
     />
   );
