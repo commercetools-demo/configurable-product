@@ -1,11 +1,13 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import {
   CustomFormDetailPage,
   CustomFormModalPage,
   FormModalPage,
   PageNotFound,
+  TabHeader,
+  TabularDetailPage,
 } from '@commercetools-frontend/application-components';
-import { useParams } from 'react-router-dom';
+import { Route, Switch, useParams } from 'react-router-dom';
 import {
   useCustomObjectFetcher,
   useCustomObjectUpdater,
@@ -28,6 +30,7 @@ import {
 import messages from './messages';
 import { useIntl } from 'react-intl';
 import { useCustomViewContext } from '@commercetools-frontend/application-shell-connectors';
+import { useRouteMatch } from 'react-router';
 
 type Props = {
   onClose: () => void;
@@ -35,10 +38,10 @@ type Props = {
 
 const RowDetails: FC<Props> = ({ onClose }) => {
   const { id, keyName } = useParams<{ id: string; keyName: string }>();
+  const match = useRouteMatch();
 
   const intl = useIntl();
   const showNotification = useShowNotification();
-  const [isOpen, setIsOpen] = useState(true);
   const { projectLanguages } = useCustomViewContext((context) => ({
     projectLanguages: context.project?.languages ?? [],
   }));
@@ -114,7 +117,6 @@ const RowDetails: FC<Props> = ({ onClose }) => {
           text: intl.formatMessage(messages.editSuccess),
         });
         onClose();
-        setIsOpen(false);
       },
       onError(message) {
         showNotification({
@@ -138,10 +140,9 @@ const RowDetails: FC<Props> = ({ onClose }) => {
       {(formProps) => {
         return (
           <>
-            <CustomFormModalPage
+            <TabularDetailPage
               title={keyName || ''}
-              onClose={onClose}
-              isOpen={isOpen}
+              onPreviousPathClick={onClose}
               formControls={
                 <>
                   <CustomFormDetailPage.FormSecondaryButton
@@ -161,9 +162,27 @@ const RowDetails: FC<Props> = ({ onClose }) => {
                   />
                 </>
               }
+              tabControls={
+                <>
+                  <TabHeader
+                    to={`${match.url}`}
+                    label={intl.formatMessage(messages.generalTab)}
+                    exactPathMatch={true}
+                  />
+                  <TabHeader
+                    to={`${match.url}/details`}
+                    label={intl.formatMessage(messages.detailsTab)}
+                  />
+                </>
+              }
             >
-              {formProps.formElements}
-            </CustomFormModalPage>
+              <Switch>
+                <Route path={`${match.path}`} exact={true}>
+                  {formProps.tab1}
+                </Route>
+                <Route path={`${match.path}/details`}>{formProps.tab2}</Route>
+              </Switch>
+            </TabularDetailPage>
           </>
         );
       }}

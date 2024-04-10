@@ -1,7 +1,6 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import {
   CustomFormDetailPage,
-  CustomFormModalPage,
   FormModalPage,
   PageNotFound,
 } from '@commercetools-frontend/application-components';
@@ -28,19 +27,20 @@ import {
 } from '@commercetools-frontend/constants';
 import { useShowNotification } from '@commercetools-frontend/actions-global';
 import { useCustomViewContext } from '@commercetools-frontend/application-shell-connectors';
+import { useHistory } from 'react-router';
 
 type Props = {
   onClose: () => void;
+  nextUrl: string;
 };
 
-const RowNew: FC<Props> = ({ onClose }) => {
+const RowNew: FC<Props> = ({ onClose, nextUrl }) => {
   const { id } = useParams<{ id: string }>();
   const intl = useIntl();
   const { projectLanguages } = useCustomViewContext((context) => ({
     projectLanguages: context.project?.languages ?? [],
   }));
-
-  const [isOpen, setIsOpen] = useState(true);
+  const { push } = useHistory();
 
   const showNotification = useShowNotification();
   const customObjectUpdater = useCustomObjectUpdater();
@@ -83,8 +83,7 @@ const RowNew: FC<Props> = ({ onClose }) => {
           domain: DOMAINS.SIDE,
           text: intl.formatMessage(messages.editSuccess),
         });
-        onClose();
-        setIsOpen(false);
+        push(`${nextUrl + id}/${row.key}/details`);
       },
       onError(message) {
         showNotification({
@@ -102,14 +101,14 @@ const RowNew: FC<Props> = ({ onClose }) => {
     <RowForm
       initialValues={customObjectToConfigRow(projectLanguages)}
       onSubmit={onSubmit}
+      createNewMode={true}
     >
       {(formProps) => {
         return (
           <>
-            <CustomFormModalPage
+            <CustomFormDetailPage
               title={intl.formatMessage(messages.title)}
-              onClose={onClose}
-              isOpen={isOpen}
+              onPreviousPathClick={onClose}
               formControls={
                 <>
                   <CustomFormDetailPage.FormSecondaryButton
@@ -127,8 +126,8 @@ const RowNew: FC<Props> = ({ onClose }) => {
                 </>
               }
             >
-              {formProps.formElements}
-            </CustomFormModalPage>
+              {formProps.tab1}
+            </CustomFormDetailPage>
           </>
         );
       }}

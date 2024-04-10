@@ -6,7 +6,7 @@ import { ContentNotification } from '@commercetools-uikit/notifications';
 import Text from '@commercetools-uikit/text';
 import { getErrorMessage, mapCustomObject } from '../../helpers';
 import messages from './messages';
-import { FC, lazy } from 'react';
+import { FC } from 'react';
 import { TCustomObject } from '../../types/generated/ctp';
 import { InfoMainPage } from '@commercetools-frontend/application-components';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -15,8 +15,7 @@ import Spacings from '@commercetools-uikit/spacings';
 import SecondaryButton from '@commercetools-uikit/secondary-button';
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import { PlusBoldIcon } from '@commercetools-uikit/icons';
-import { Switch, useHistory, useRouteMatch } from 'react-router';
-import { SuspendedRoute } from '@commercetools-frontend/application-shell';
+import { useHistory, useRouteMatch } from 'react-router';
 import { Row as ConfigRow } from '../row-form/row-form';
 import createColumnDefinitions, {
   renderAttributeTypeName,
@@ -30,9 +29,6 @@ import { useShowNotification } from '@commercetools-frontend/actions-global';
 import { useCustomObjectUpdater } from '../../hooks/use-custom-object-connector/use-custom-object-connector';
 
 type Row = ConfigRow & TRow;
-
-const RowDetails = lazy(() => import('../row-details'));
-const RowNew = lazy(() => import('../row-new/row-new'));
 
 export type Props = {
   productId: string;
@@ -211,7 +207,7 @@ const CustomizableProductEditor: FC<Props> = ({ productId, variantId }) => {
           <SecondaryButton
             iconLeft={<PlusBoldIcon />}
             as="a"
-            to={`${match.url}/${resource.id}/new`}
+            to={`${match.url}/new/${resource.id}`}
             label={intl.formatMessage(messages.createNewRow)}
           />
         </Spacings.Inline>
@@ -224,7 +220,7 @@ const CustomizableProductEditor: FC<Props> = ({ productId, variantId }) => {
           return { ...item, id: item.key };
         })}
         onRowClick={(row) => {
-          push(`${match.url}/${resource.id}/${row.key}`);
+          push(`${match.url}/details/${resource.id}/${row.key}`);
         }}
         itemRenderer={(item, column) => {
           switch (column.key) {
@@ -241,24 +237,24 @@ const CustomizableProductEditor: FC<Props> = ({ productId, variantId }) => {
           }
         }}
       />
-      <Switch>
-        <SuspendedRoute path={`${match.path}/:id/new`}>
-          <RowNew
-            onClose={() => {
-              refetch();
-              push(`${match.url}`);
-            }}
-          />
-        </SuspendedRoute>
-        <SuspendedRoute path={`${match.path}/:id/:keyName`}>
-          <RowDetails
-            onClose={() => {
-              refetch();
-              push(`${match.url}`);
-            }}
-          />
-        </SuspendedRoute>
-      </Switch>
+      {/*<Switch>*/}
+      {/*  <SuspendedRoute path={`${match.path}/:id/new`}>*/}
+      {/*    <RowNew*/}
+      {/*      onClose={() => {*/}
+      {/*        refetch();*/}
+      {/*        push(`${match.url}`);*/}
+      {/*      }}*/}
+      {/*    />*/}
+      {/*  </SuspendedRoute>*/}
+      {/*  <SuspendedRoute path={`${match.path}/:id/:keyName`}>*/}
+      {/*    <RowDetails*/}
+      {/*      onClose={() => {*/}
+      {/*        refetch();*/}
+      {/*        push(`${match.url}`);*/}
+      {/*      }}*/}
+      {/*    />*/}
+      {/*  </SuspendedRoute>*/}
+      {/*</Switch>*/}
     </InfoMainPage>
   );
 };

@@ -16,6 +16,11 @@ export default defineMessages({
     description: 'Label for general tab',
     defaultMessage: 'General',
   },
+  detailsTab: {
+    id: 'RowDetails.tabs.details',
+    description: 'Label for details tab',
+    defaultMessage: 'Details',
+  },
   deleteCustomObject: {
     id: 'RowDetails.button.deleteCustomObject',
     description: 'Label for delete custom object button',

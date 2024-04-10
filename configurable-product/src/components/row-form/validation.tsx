@@ -86,8 +86,12 @@ export const validate = (formikValues: Row): FormikErrors<Row> => {
     }
   }
 
-  //categories validation
-  if (formikValues.categories && Array.isArray(formikValues.categories)) {
+  //categories validation only if type is dynamic-bundle
+  if (
+    formikValues.config.type === 'dynamic-bundle' &&
+    formikValues.categories &&
+    Array.isArray(formikValues.categories)
+  ) {
     errors.categories = formikValues.categories.map((value) => {
       let error: TCategoryError = {
         category: {},
@@ -119,47 +123,13 @@ export const validate = (formikValues: Row): FormikErrors<Row> => {
     });
   }
 
-  return {
-    ...omitEmpty<FormikErrors<Row>, TErrors>(errors),
-    // @ts-ignore
-    categories: errors.categories,
-  };
-
-  // const validationSchema = object({
-  //   categories: array(
-  //     object({
-  //       category: object({
-  //         value: string(),
-  //         label: string(),
-  //       })
-  //         .nullable()
-  //         .required(intl.formatMessage(messages.missingRequiredField)),
-  //       minQuantity: lazy((value) =>
-  //         typeof value === 'number'
-  //           ? number()
-  //               .min(0, intl.formatMessage(messages.zeroQuantityError))
-  //               .integer(intl.formatMessage(messages.integerError))
-  //           : string()
-  //       ),
-  //       maxQuantity: lazy((value) =>
-  //         typeof value === 'number'
-  //           ? number()
-  //               .min(0, intl.formatMessage(messages.zeroQuantityError))
-  //               .integer(intl.formatMessage(messages.integerError))
-  //               .when('minQuantity', {
-  //                 is: (val: number | undefined) => {
-  //                   return val;
-  //                 },
-  //                 then: (schema) =>
-  //                   schema.moreThan(
-  //                     ref('minQuantity'),
-  //                     intl.formatMessage(messages.maxGreaterThanMinError)
-  //                   ),
-  //               })
-  //           : string()
-  //       ),
-  //       additionalCharge: bool(),
-  //     })
-  //   ),
-  // });
+  let result = omitEmpty<FormikErrors<Row>, TErrors>(errors);
+  if (errors.categories.length > 0) {
+    result = {
+      ...result,
+      // @ts-ignore
+      categories: errors.categories,
+    };
+  }
+  return result;
 };

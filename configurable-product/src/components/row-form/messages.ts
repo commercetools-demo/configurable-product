@@ -125,4 +125,11 @@ export default defineMessages({
     description: 'Error message for missing required value',
     defaultMessage: 'This field is required. Provide a value.',
   },
+  saveFirst: {
+    id: 'ProjectSettings.ProductTypes.Attributes.cannotBeCreated',
+    description:
+      'The message explaining to the user that he cannot create attributes immediately when creating a product-type',
+    defaultMessage:
+      'Please save first in order to create further configuration.',
+  },
 });

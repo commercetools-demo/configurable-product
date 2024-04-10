@@ -9,6 +9,7 @@ import { useCustomViewContext } from '@commercetools-frontend/application-shell-
 import { RowFormInputEnum } from '../row-form-input-enum/row-form-input-enum';
 import LocalizedTextField from '@commercetools-uikit/localized-text-field';
 import LocalizedMultilineTextField from '@commercetools-uikit/localized-multiline-text-field';
+import Text from '@commercetools-uikit/text';
 import CheckboxInput from '@commercetools-uikit/checkbox-input';
 import { Item } from '../row-form-input-enum/row-form-input-enum-table';
 import RowFormInputRange from '../row-form-input-range/row-form-input-range';
@@ -47,7 +48,8 @@ export type Row = {
 };
 
 type FormProps = {
-  formElements: ReactElement;
+  tab1: ReactElement;
+  tab2: ReactElement;
   values: Formik['values'];
   isDirty: Formik['dirty'];
   isSubmitting: Formik['isSubmitting'];
@@ -59,9 +61,15 @@ type Props = {
   onSubmit: (items: Row) => void;
   initialValues: Row;
   children: (formProps: FormProps) => JSX.Element;
+  createNewMode?: boolean;
 };
 
-const RowForm: FC<Props> = ({ onSubmit, initialValues, children }) => {
+const RowForm: FC<Props> = ({
+  onSubmit,
+  initialValues,
+  createNewMode = false,
+  children,
+}) => {
   const intl = useIntl();
   const { dataLocale } = useCustomViewContext((context) => ({
     dataLocale: context.dataLocale ?? '',
@@ -77,7 +85,7 @@ const RowForm: FC<Props> = ({ onSubmit, initialValues, children }) => {
     enableReinitialize: true,
   });
 
-  const formElements = (
+  const tab1 = (
     <FormikProvider value={formik}>
       <Spacings.Stack scale="m">
         <TextField
@@ -107,6 +115,14 @@ const RowForm: FC<Props> = ({ onSubmit, initialValues, children }) => {
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
         />
+        {createNewMode && <Text.Body intlMessage={messages.saveFirst} />}
+      </Spacings.Stack>
+    </FormikProvider>
+  );
+
+  const tab2 = (
+    <FormikProvider value={formik}>
+      <Spacings.Stack scale="m">
         <SelectField
           name="type"
           isRequired={true}
@@ -180,7 +196,8 @@ const RowForm: FC<Props> = ({ onSubmit, initialValues, children }) => {
   );
 
   return children({
-    formElements: formElements,
+    tab1: tab1,
+    tab2: tab2,
     values: formik.values,
     isDirty: formik.dirty,
     isSubmitting: formik.isSubmitting,
