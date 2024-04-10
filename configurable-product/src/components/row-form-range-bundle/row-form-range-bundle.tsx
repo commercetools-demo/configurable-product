@@ -28,7 +28,7 @@ const RowFormRangeBundle = () => {
             name={'rangeMin'}
             min={0}
             step={1}
-            value={formik.values.rangeMin || 0}
+            value={formik.values.rangeMin || ''}
             errors={NumberField.toFieldErrors<TErrors>(formik.errors).rangeMin}
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
@@ -40,7 +40,7 @@ const RowFormRangeBundle = () => {
             name={'rangeMax'}
             min={1}
             step={1}
-            value={formik.values.rangeMax || 1}
+            value={formik.values.rangeMax || ''}
             errors={NumberField.toFieldErrors<TErrors>(formik.errors).rangeMax}
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}

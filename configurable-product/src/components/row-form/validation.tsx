@@ -169,7 +169,8 @@ export const validate = (formikValues: Row): FormikErrors<Row> => {
 
   //product validation only if type is static-bundle
   if (
-    formikValues.config.type === 'static-bundle' &&
+    (formikValues.config.type === 'static-bundle' ||
+      formikValues.config.type === 'range-bundle') &&
     formikValues.products &&
     Array.isArray(formikValues.products)
   ) {
