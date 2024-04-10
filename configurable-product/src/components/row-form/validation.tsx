@@ -5,6 +5,7 @@ import { FormikErrors } from 'formik';
 import TextInput from '@commercetools-uikit/text-input';
 import omitEmpty from 'omit-empty-es';
 import { Row } from './row-form';
+import LocalizedTextInput from '@commercetools-uikit/localized-text-input';
 
 export const renderRangeMinError: TNumberFieldProps['renderError'] = (key) => {
   switch (key) {
@@ -44,6 +45,7 @@ type TCategoryError = {
 
 export type TErrors = {
   key: { missing?: boolean; keyHint?: boolean };
+  title: { missing?: boolean };
   rangeMin: { quantity?: true; minGreaterThanMax?: true };
   rangeMax: { quantity?: true };
   categories: Array<TCategoryError | undefined>;
@@ -52,6 +54,7 @@ export type TErrors = {
 export const validate = (formikValues: Row): FormikErrors<Row> => {
   const errors: TErrors = {
     key: {},
+    title: {},
     rangeMin: {},
     rangeMax: {},
     categories: [],
@@ -66,6 +69,10 @@ export const validate = (formikValues: Row): FormikErrors<Row> => {
     (formikValues.key.length < 2 || formikValues.key.length > 256)
   ) {
     errors.key.keyHint = true;
+  }
+
+  if (!formikValues.title || LocalizedTextInput.isEmpty(formikValues.title)) {
+    errors.title.missing = true;
   }
 
   //rangeMin Validation

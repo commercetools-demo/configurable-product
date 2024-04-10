@@ -104,8 +104,10 @@ const RowForm: FC<Props> = ({
           isRequired={true}
           value={formik.values.title || {}}
           selectedLanguage={dataLocale}
+          touched={!!formik.touched.title}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
+          errors={LocalizedTextField.toFieldErrors<Row>(formik.errors).title}
         />
         <LocalizedMultilineTextField
           name="text"
