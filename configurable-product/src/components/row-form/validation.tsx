@@ -57,6 +57,8 @@ export type TProductError = {
   quantity: { quantity?: true; missing?: boolean };
 };
 
+export type TProductErrors = { [key: number]: TProductError };
+
 export type TErrors = {
   key: { missing?: boolean; keyHint?: boolean };
   title: { missing?: boolean };
@@ -64,7 +66,7 @@ export type TErrors = {
   rangeMin: { quantity?: true; minGreaterThanMax?: true; missing?: boolean };
   rangeMax: { quantity?: true; missing?: boolean };
   categories: Array<TCategoryError | undefined>;
-  products: { [key: number]: TProductError };
+  products: TProductErrors;
 };
 
 export const validate = (formikValues: Row): FormikErrors<Row> => {

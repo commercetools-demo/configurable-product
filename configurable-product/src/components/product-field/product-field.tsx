@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { useIntl } from 'react-intl';
-import { get } from 'lodash';
 import { CloseBoldIcon, PlusBoldIcon } from '@commercetools-uikit/icons';
 import FieldLabel from '@commercetools-uikit/field-label';
 import IconButton from '@commercetools-uikit/icon-button';
@@ -14,10 +13,10 @@ import styles from './product-field.mod.css';
 import { ProductSearchInput } from '../product-search-input';
 import { useFormikContext } from 'formik';
 import { Row } from '../row-form/row-form';
-import { FormikTouched } from 'formik/dist/types';
+import { FormikErrors, FormikTouched } from 'formik/dist/types';
 import { notEmpty } from '../../helpers';
 import { ErrorMessage } from '@commercetools-uikit/messages';
-import { renderProductError, TProductError } from '../row-form/validation';
+import { renderProductError, TProductErrors } from '../row-form/validation';
 
 export interface ProductValue extends Record<string, unknown> {
   id: number;
@@ -31,26 +30,41 @@ export interface ProductEntry {
   quantity?: string;
 }
 
+function toFieldErrors(
+  errors: string | string[] | FormikErrors<ProductEntry>[] | undefined
+) {
+  return errors as TProductErrors | undefined;
+}
+
 const getError = (
-  errors: { [key: number]: TProductError } | undefined,
+  errors: TProductErrors | undefined,
   field: keyof ProductEntry,
   item: FormikTouched<ProductEntry>,
   index: number
-): { [key: string]: boolean } =>
-  // @ts-ignore
-  item && item[field] ? errors?.[index]?.[field] : null;
+): { [key: string]: boolean } | undefined => {
+  return item && item[field] ? errors?.[index]?.[field] : undefined;
+};
 
 const hasError = (
   touched: Array<FormikTouched<ProductEntry>> | undefined,
-  errors: { [key: number]: TProductError } | undefined,
+  errors: TProductErrors | undefined,
   index: number,
-  field: string
-) =>
-  !!get(touched, `[${index}].${field}`) && !!get(errors, `[${index}].${field}`);
+  field: keyof ProductEntry
+): boolean => {
+  if (touched?.[index] && Object.keys(touched?.[index]).indexOf(field) >= 0) {
+    const isTouched = Object.values(touched?.[index])[
+      Object.keys(touched?.[index]).indexOf(field)
+    ];
+    if (isTouched && errors?.[index]?.[field]) {
+      return true;
+    }
+  }
+  return false;
+};
 
 const getErrors = (
   touched: Array<FormikTouched<ProductEntry>> | undefined,
-  errors: { [key: number]: TProductError } | undefined
+  errors: TProductErrors | undefined
 ) => {
   let result: Array<{ [key: string]: boolean }> = [];
   if (touched && errors) {
@@ -91,10 +105,8 @@ const ProductField: FC<ProductFieldProps> = ({
   const intl = useIntl();
 
   const formik = useFormikContext<Row>();
-  const fieldErrors = getErrors(
-    formik.touched.products,
-    formik.errors.products as { [key: number]: TProductError } | undefined
-  );
+  const productErrors = toFieldErrors(formik.errors.products);
+  const fieldErrors = getErrors(formik.touched.products, productErrors);
 
   return (
     <Spacings.Stack scale="s">
@@ -121,19 +133,12 @@ const ProductField: FC<ProductFieldProps> = ({
                 placeholder={intl.formatMessage(messages.productPlaceholder)}
                 hasError={hasError(
                   formik.touched.products,
-                  formik.errors.products as
-                    | { [key: number]: TProductError }
-                    | undefined,
+                  productErrors,
                   index,
                   PRODUCT
                 )}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                // touched={
-                //   formik.touched.products &&
-                //   formik.touched.products[index] &&
-                //   formik.touched.products[index][PRODUCT]
-                // }
               />
             </div>
             {withQuantity && (
@@ -144,9 +149,7 @@ const ProductField: FC<ProductFieldProps> = ({
                   placeholder={intl.formatMessage(messages.quantityPlaceholder)}
                   hasError={hasError(
                     formik.touched.products,
-                    formik.errors.products as
-                      | { [key: number]: TProductError }
-                      | undefined,
+                    productErrors,
                     index,
                     QUANTITY
                   )}
