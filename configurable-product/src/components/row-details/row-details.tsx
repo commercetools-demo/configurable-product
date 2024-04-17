@@ -103,12 +103,13 @@ const RowDetails: FC<Props> = ({ onClose }) => {
   const handleDelete = async () => {
     const oldValue = [...mapCustomObject(customObject)];
     const index = oldValue.findIndex((entry) => entry.key === keyName);
+    oldValue.splice(index, 1);
 
     await customObjectUpdater.execute({
       draft: {
         container: customObject.container,
         key: customObject.key,
-        value: JSON.stringify(oldValue.splice(index, 0)),
+        value: JSON.stringify(oldValue),
       },
       onCompleted() {
         showNotification({

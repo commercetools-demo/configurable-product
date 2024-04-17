@@ -83,6 +83,7 @@ const RowNew: FC<Props> = ({ onClose, nextUrl }) => {
           domain: DOMAINS.SIDE,
           text: intl.formatMessage(messages.editSuccess),
         });
+        refetch();
         push(`${nextUrl + id}/${row.key}/details`);
       },
       onError(message) {
