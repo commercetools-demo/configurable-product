@@ -11,15 +11,19 @@ query ProductSearch($text: String, $locale: String, $filter: String) {
         id
         sku
         key
-        price
         isMatchingVariant
+        images @type(name: "Image") {
+          url
+        }
       }
       masterVariant @type(name: "ProductVariant") {
         id
         sku
         key
-        price
         isMatchingVariant
+        images @type(name: "Image") {
+          url
+        }
       }
     }
   }

@@ -20,9 +20,10 @@ import { renderProductError, TProductErrors } from '../row-form/validation';
 
 export interface ProductValue extends Record<string, unknown> {
   id: number;
-  name: { [locale: string]: string };
+  name: string;
   productId: string;
   sku: string;
+  image?: string;
 }
 
 export interface ProductEntry {

@@ -1,70 +1,117 @@
 import { FC } from 'react';
 import { useMcQuery } from '@commercetools-frontend/application-shell';
 import ProductSearch from './product-search.rest.graphql';
-import {
-  useCustomViewContext,
-  useApplicationContext,
-} from '@commercetools-frontend/application-shell-connectors';
+import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 import AsyncSelectInput from '@commercetools-uikit/async-select-input';
 import { useIntl } from 'react-intl';
 import Spacings from '@commercetools-uikit/spacings';
 import messages from './messages';
 import { formatLocalizedString } from '@commercetools-frontend/l10n';
-import { NO_VALUE_FALLBACK } from '@commercetools-frontend/constants';
+import {
+  GRAPHQL_TARGETS,
+  NO_VALUE_FALLBACK,
+} from '@commercetools-frontend/constants';
 import { SingleValueProps, OptionProps } from 'react-select';
 import { ProductValue } from '../product-field/product-field';
 import { SearchIcon } from '@commercetools-uikit/icons';
 import Text from '@commercetools-uikit/text';
+import { useQuery } from '@apollo/client';
+import { TQuery, TQuery_ProductArgs } from '../../types/generated/ctp';
+import ProductById from './product-by-id.graphql';
+import { ContentNotification } from '@commercetools-uikit/notifications';
+import { getErrorMessage } from '../../helpers';
+import LoadingSpinner from '@commercetools-uikit/loading-spinner';
+import { PageNotFound } from '@commercetools-frontend/application-components';
 
 export const ProductSearchSingleValue: FC<SingleValueProps<ProductValue>> = (
   props
 ) => {
-  const { dataLocale, languages } = useApplicationContext((context) => ({
+  const { dataLocale } = useApplicationContext((context) => ({
     dataLocale: context.dataLocale ?? '',
-    languages: context.project?.languages ?? [],
   }));
+
+  const { data, loading, error } = useQuery<
+    TQuery,
+    { locale: string; sku: string } & TQuery_ProductArgs
+  >(ProductById, {
+    variables: {
+      id: props.data.productId,
+      sku: props.data.sku,
+      locale: dataLocale,
+    },
+    context: {
+      target: GRAPHQL_TARGETS.COMMERCETOOLS_PLATFORM,
+    },
+  });
+  if (!props.data || !props.data.id) {
+    return <AsyncSelectInput.SingleValue {...props} />;
+  }
+  if (error) {
+    return (
+      <ContentNotification type="error">
+        <Text.Body>{getErrorMessage(error)}</Text.Body>
+      </ContentNotification>
+    );
+  }
+  if (loading) {
+    return (
+      <Spacings.Stack alignItems="center">
+        <LoadingSpinner />
+      </Spacings.Stack>
+    );
+  }
+  if (!data?.product) {
+    return <PageNotFound />;
+  }
+
   return (
     <AsyncSelectInput.SingleValue {...props}>
-      {formatLocalizedString(props.data, {
-        key: 'name',
-        locale: dataLocale,
-        fallbackOrder: languages,
-        fallback: NO_VALUE_FALLBACK,
-      })}
+      <Spacings.Inline>
+        {data.product.masterData.staged?.variant?.images && (
+          <div>
+            <img
+              style={{ height: '18px' }}
+              src={data.product.masterData.staged?.variant?.images?.[0]?.url}
+            />
+          </div>
+        )}
+        <div>{`${data.product.masterData.staged?.name} (${
+          data.product.masterData.staged?.variant?.key ||
+          data.product.masterData.staged?.variant?.sku
+        })`}</div>
+      </Spacings.Inline>
     </AsyncSelectInput.SingleValue>
   );
 };
 
 const ProductSearchOption: FC<OptionProps<ProductValue>> = (props) => {
   const intl = useIntl();
-  const { dataLocale, languages } = useApplicationContext((context) => ({
-    dataLocale: context.dataLocale ?? '',
-    languages: context.project?.languages ?? [],
-  }));
   const variant = props.data;
+
+  if (!variant) {
+    return <AsyncSelectInput.Option {...props} />;
+  }
 
   return (
     <AsyncSelectInput.Option {...props}>
-      <Spacings.Stack scale="xs">
-        <Text.Detail isBold>
-          {formatLocalizedString(variant, {
-            key: 'name',
-            locale: dataLocale,
-            fallbackOrder: languages,
-            fallback: NO_VALUE_FALLBACK,
-          })}
-        </Text.Detail>
-        {variant?.id && (
-          <Text.Detail>{`${intl.formatMessage(messages.id)}: ${
-            variant?.id
-          }`}</Text.Detail>
+      <Spacings.Inline>
+        {variant.image && (
+          <img src={variant.image} style={{ height: '75px' }} />
         )}
-        {variant?.sku && (
-          <Text.Detail>{`${intl.formatMessage(messages.sku)}: ${
-            variant?.sku
-          }`}</Text.Detail>
-        )}
-      </Spacings.Stack>
+        <Spacings.Stack scale="xs">
+          <Text.Detail isBold>{variant.name}</Text.Detail>
+          {variant?.id && (
+            <Text.Detail>{`${intl.formatMessage(messages.id)}: ${
+              variant?.id
+            }`}</Text.Detail>
+          )}
+          {variant?.sku && (
+            <Text.Detail>{`${intl.formatMessage(messages.sku)}: ${
+              variant?.sku
+            }`}</Text.Detail>
+          )}
+        </Spacings.Stack>
+      </Spacings.Inline>
     </AsyncSelectInput.Option>
   );
 };
@@ -80,11 +127,14 @@ interface ProductSearchInputProps {
   onChange(...args: unknown[]): unknown;
 }
 
+type Image = { url: string };
+
 type ProductVariantResponse = {
   id: number;
   sku: string;
   isMatchingVariant: boolean;
   price: number;
+  images: Array<Image>;
 };
 type ProductResponse = {
   id: string;
@@ -102,8 +152,9 @@ const ProductSearchInput: FC<ProductSearchInputProps> = ({
   onBlur,
   onChange,
 }) => {
-  const { dataLocale } = useCustomViewContext((context) => ({
+  const { dataLocale, languages } = useApplicationContext((context) => ({
     dataLocale: context.dataLocale ?? '',
+    languages: context.project?.languages ?? [],
   }));
   const intl = useIntl();
 
@@ -133,17 +184,22 @@ const ProductSearchInput: FC<ProductSearchInputProps> = ({
   ) => {
     const base = {
       productId: product.id,
-      name: product.name,
+      name: formatLocalizedString(product, {
+        key: 'name',
+        locale: dataLocale,
+        fallbackOrder: languages,
+        fallback: NO_VALUE_FALLBACK,
+      }),
     };
 
     const addMatchingVariant = (variant: ProductVariantResponse) => {
-      const { id, sku, price, isMatchingVariant } = variant;
-      if (isMatchingVariant) {
+      if (variant.isMatchingVariant) {
         const item = {
           ...base,
-          id,
-          sku,
-          price,
+          id: variant.id,
+          sku: variant.sku,
+          price: variant.price,
+          image: variant.images?.[0]?.url,
         };
         result.push(item);
       }
@@ -158,13 +214,14 @@ const ProductSearchInput: FC<ProductSearchInputProps> = ({
     return result;
   };
 
-  const loadOptions = (text: string) =>
-    refetch({ text }).then((response) => {
+  const loadOptions = (text: string) => {
+    return refetch({ text }).then((response) => {
       return response.data.products.results.reduce<Array<ProductValue>>(
         getMatchingVariants,
         []
       );
     });
+  };
 
   return (
     <AsyncSelectInput
@@ -173,7 +230,6 @@ const ProductSearchInput: FC<ProductSearchInputProps> = ({
       placeholder={placeholder}
       isClearable
       isSearchable
-      defaultOptions={[]}
       loadOptions={loadOptions}
       components={{
         // @ts-ignore
