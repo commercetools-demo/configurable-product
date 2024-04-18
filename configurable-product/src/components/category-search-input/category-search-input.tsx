@@ -138,6 +138,7 @@ const CategorySearchInput: FC<Props> = ({
         return {
           id: category.id,
           name: localizePath(category, showProductCount),
+          key: category.key,
         };
       });
     });

@@ -20,6 +20,7 @@ import { notEmpty } from '../../helpers';
 export interface CategoryValue extends Record<string, unknown> {
   id?: string;
   name: string;
+  key?: string | null;
 }
 
 export type CategoryEntry = {

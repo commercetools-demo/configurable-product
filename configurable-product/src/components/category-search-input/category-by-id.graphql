@@ -1,5 +1,6 @@
 fragment CategoryToDisplay on Category {
   name(locale: $locale)
+  key
 }
 
 query CategoryById($id: String, $locale: Locale) {
