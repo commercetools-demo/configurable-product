@@ -88,6 +88,10 @@ export default defineMessages({
     id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.isRequired',
     defaultMessage: 'is Required',
   },
+  allowProductSelectionLabel: {
+    id: 'ProjectSettings.ProductTypes.Details.AttributeDefinition.Details.isRequired',
+    defaultMessage: 'Allow Product Selection',
+  },
   editEnumButtonLabel: {
     id: 'ProjectSettings.ProductType.AttributeDefinitions.Details.EnumTable.editEnumButton.label',
     description:

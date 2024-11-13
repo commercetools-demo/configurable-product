@@ -32,6 +32,7 @@ export type RowConfig = {
     | 'dynamic-bundle'
     | 'range-bundle';
   isRequired?: boolean;
+  allowProductSelectionLabel?: boolean;
 };
 
 export type Row = {
@@ -187,7 +188,16 @@ const RowForm: FC<Props> = ({
         )}
         {formik.values.config.type === 'int-range' && <RowFormInputRange />}
         {formik.values.config.type === 'static-bundle' && (
-          <RowFormStaticBundle />
+          <>
+            <CheckboxInput
+              name="config.allowProductSelectionLabel"
+              isChecked={formik.values.config.allowProductSelectionLabel}
+              onChange={formik.handleChange}
+            >
+              <FormattedMessage {...messages.allowProductSelectionLabel} />
+            </CheckboxInput>
+            <RowFormStaticBundle />
+          </>
         )}
         {formik.values.config.type === 'dynamic-bundle' && (
           <RowFormDynamicBundle />
