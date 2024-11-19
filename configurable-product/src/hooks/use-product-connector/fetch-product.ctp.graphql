@@ -1,4 +1,4 @@
-query RetrieveCustomObject($id: String!) {
+query RetrieveCustomObject($id: String! $skus: [String!]) {
   product(id: $id) {
     id
     key
@@ -8,7 +8,11 @@ query RetrieveCustomObject($id: String!) {
     version
     masterData {
       staged {
-        allVariants {
+        nameAllLocales {
+          locale
+          value
+        }
+        allVariants(skus: $skus) {
           sku
           key
           id
@@ -16,6 +20,14 @@ query RetrieveCustomObject($id: String!) {
             sources {
               uri
             }
+          }
+          prices {
+            id
+            value {
+              centAmount
+              currencyCode
+            }
+            country
           }
           attributesRaw(includeNames: ["configuration"]) {
             name

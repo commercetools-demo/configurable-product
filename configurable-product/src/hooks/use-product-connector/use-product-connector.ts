@@ -1,7 +1,9 @@
 /// <reference path="../../../@types-extensions/graphql-ctp/index.d.ts" />
+/// <reference path="../../../@types/commercetools__sync-actions/index.d.ts" />
 
 import type { ApolloError, ApolloQueryResult } from '@apollo/client';
 import {
+  useMcLazyQuery,
   useMcMutation,
   useMcQuery,
 } from '@commercetools-frontend/application-shell';
@@ -12,11 +14,15 @@ import {
   TMutation_UpdateProductArgs,
   TProduct,
   TProductUpdateAction,
+  TProductVariant,
   TQuery,
   TQuery_ProductArgs,
 } from '../../types/generated/ctp';
 import UpdateProduct from './update-product.ctp.graphql';
 import { extractErrorFromGraphQlResponse } from '../../helpers';
+import { createSyncProducts } from '@commercetools/sync-actions';
+
+const syncProducts = createSyncProducts();
 
 type RetrieveCustomObjectProps = {
   id?: string;
@@ -54,6 +60,61 @@ export const useRetrieveCustomObjectForProduct: TUseRetrieveCustomObjectFetcher 
     };
   };
 
+export const findSyncActions = (
+  variant: TProductVariant,
+  prices: Array<{ currency: string; country?: string; centAmount: number }>
+) => {
+  const before = {
+    masterVariant: {
+      sku: variant?.sku,
+      id: variant?.id,
+      key: variant?.key,
+      prices: variant.prices?.map((p) => ({
+        id: p.id,
+        country: p.country,
+        value: {
+          currencyCode: p.value.currencyCode,
+          centAmount: p.value.centAmount,
+        },
+      })),
+    },
+  };
+  const now = {
+    masterVariant: {
+      sku: variant?.sku,
+      id: variant?.id,
+      key: variant?.key,
+      prices: prices?.map((price) => {
+        const found = variant.prices?.find(
+          (p) =>
+            p.value.currencyCode === price.currency &&
+            p.country === price.country
+        );
+        if (found) {
+          return {
+            id: found.id,
+            country: found.country,
+            value: {
+              currencyCode: found.value.currencyCode,
+              centAmount: price.centAmount,
+            },
+          };
+        } else {
+          return {
+            country: price.country,
+            value: {
+              centAmount: price.centAmount,
+              currencyCode: price.currency,
+            },
+          };
+        }
+      }),
+    },
+  };
+  console.log(now, before);
+  return syncProducts.buildActions(now, before);
+};
+
 export const useProductUpdater = () => {
   const [updateProduct, { loading }] = useMcMutation<
     TMutation,
@@ -85,6 +146,53 @@ export const useProductUpdater = () => {
           version: version,
           id: id,
           key: key,
+        },
+        onCompleted() {
+          onCompleted && onCompleted();
+        },
+        onError({ message }) {
+          onError && onError(message);
+        },
+      });
+    } catch (graphQlResponse) {
+      throw extractErrorFromGraphQlResponse(graphQlResponse);
+    }
+  };
+
+  return {
+    loading,
+    execute,
+  };
+};
+
+export const useLazyProduct = () => {
+  const [getProduct, { loading }] = useMcLazyQuery<
+    TQuery,
+    TQuery_ProductArgs & { skus?: Array<string> }
+  >(RetrieveCustomObject);
+
+  const execute = async ({
+    id,
+    key,
+    skus,
+    onCompleted,
+    onError,
+  }: {
+    id?: string;
+    key?: string;
+    skus?: Array<string>;
+    onCompleted?: () => void;
+    onError?: (message?: string) => void;
+  }) => {
+    try {
+      return await getProduct({
+        context: {
+          target: GRAPHQL_TARGETS.COMMERCETOOLS_PLATFORM,
+        },
+        variables: {
+          id: id,
+          key: key,
+          skus: skus,
         },
         onCompleted() {
           onCompleted && onCompleted();

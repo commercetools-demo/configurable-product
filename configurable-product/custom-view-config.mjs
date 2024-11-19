@@ -8,7 +8,8 @@ const config = {
     development: {
       initialProjectKey: '${env:INITIAL_PROJECT_KEY}',
       hostUriPath:
-        '/tech-sales-good-store/products/4ea7b9e8-730f-413b-953a-9cad3278d7eb/variants/2',
+        '/tech-sales-good-store/products/4ea7b9e8-730f-413b-953a-9cad3278d7eb/variants/2/prices',
+      // '/tech-sales-good-store/products/4ea7b9e8-730f-413b-953a-9cad3278d7eb/variants/2',
     },
     production: {
       customViewId: '${env:CUSTOM_VIEW_ID}',
@@ -23,7 +24,10 @@ const config = {
   typeSettings: {
     size: 'LARGE',
   },
-  locators: ['products.product_variant_details.general'],
+  locators: [
+    'products.product_variant_details.general',
+    'products.product_variant_details.prices',
+  ],
 };
 
 export default config;

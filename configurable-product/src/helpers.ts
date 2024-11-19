@@ -1,5 +1,5 @@
 import { ApolloError } from '@apollo/client';
-import { TCustomObject } from './types/generated/ctp';
+import { TChangeProductPrice, TCustomObject } from './types/generated/ctp';
 import { Row } from './components/row-form/row-form';
 import LocalizedTextInput from '@commercetools-uikit/localized-text-input';
 import { transformLocalizedFieldToLocalizedString } from '@commercetools-frontend/l10n';
@@ -55,3 +55,60 @@ export const customObjectToConfigRow = (
   let row = mapCustomObject(customObject).find((entry) => entry.key === key);
   return { ...template, ...(row || {}) };
 };
+
+export type TSyncAction = { action: string; [x: string]: unknown };
+export type TGraphqlUpdateAction = Record<string, Record<string, unknown>>;
+
+const convertAction = (
+  action: TSyncAction,
+  defaults?: { [x: string]: unknown }
+): TGraphqlUpdateAction => {
+  const { action: actionName, ...actionPayload } = action;
+  let actionPL = actionPayload;
+  switch (actionName) {
+    case 'changePrice': {
+      actionPL = {
+        priceId: actionPL.priceId as string,
+        price: {
+          country: actionPL.price.country,
+          value: {
+            centPrecision: {
+              currencyCode: actionPL.price.value.currencyCode,
+              centAmount: actionPL.price.value.centAmount,
+            },
+          },
+        },
+      };
+      break;
+    }
+    case 'addPrice': {
+      actionPL = {
+        variantId: actionPL.variantId as string,
+        price: {
+          country: actionPL.price.country,
+          value: {
+            centPrecision: {
+              currencyCode: actionPL.price.value.currencyCode,
+              centAmount: actionPL.price.value.centAmount,
+            },
+          },
+        },
+      };
+      break;
+    }
+  }
+  return {
+    [actionName]: { ...actionPL, ...defaults },
+  };
+};
+export const createGraphQlUpdateActions = (
+  actions: TSyncAction[],
+  defaults?: { [x: string]: unknown }
+) =>
+  actions.reduce<TGraphqlUpdateAction[]>(
+    (previousActions, syncAction) => [
+      ...previousActions,
+      convertAction(syncAction, defaults),
+    ],
+    []
+  );

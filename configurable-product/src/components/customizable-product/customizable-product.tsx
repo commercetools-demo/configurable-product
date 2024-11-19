@@ -4,41 +4,25 @@ import messages from './messages';
 import { useIntl } from 'react-intl';
 import { useCustomViewContext } from '@commercetools-frontend/application-shell-connectors';
 import CustomizableProductEditor from './customizable-product-editor';
+import CustomizableProductPrices from '../customizable-product-prices';
+import CustomizableProductLoader from '../customizable-product-loader';
 
 const CustomizableProduct = () => {
   const intl = useIntl();
   const { hostUrl } = useCustomViewContext((context) => ({
     hostUrl: context.hostUrl,
   }));
-  let productId: string | undefined = undefined;
-  let variantId: string | undefined;
-  if (hostUrl) {
-    const splittedUrl = hostUrl.split('/');
-    const productsIndex = splittedUrl.indexOf('products');
-    const variantsIndex = splittedUrl.indexOf('variants');
-    if (productsIndex === -1) {
-      return (
-        <ContentNotification type="error">
-          <Text.Body>{intl.formatMessage(messages.productsIndex)}</Text.Body>
-        </ContentNotification>
-      );
-    }
-    if (variantsIndex === -1) {
-      return (
-        <ContentNotification type="error">
-          <Text.Body>{intl.formatMessage(messages.variantsIndex)}</Text.Body>
-        </ContentNotification>
-      );
-    }
-    productId = splittedUrl[productsIndex + 1];
-    variantId = splittedUrl[variantsIndex + 1];
-  } else {
+
+  if (!hostUrl) {
     return (
       <ContentNotification type="error">
         <Text.Body>{intl.formatMessage(messages.noHostUrl)}</Text.Body>
       </ContentNotification>
     );
   }
+  const [__, productId, variantId, tab] =
+    hostUrl.match('/products/([^/]+)/variants/([^/]+)/?([^/]+)?') || [];
+
   if (!productId) {
     return (
       <ContentNotification type="error">
@@ -54,7 +38,20 @@ const CustomizableProduct = () => {
     );
   }
   return (
-    <CustomizableProductEditor productId={productId} variantId={variantId} />
+    <CustomizableProductLoader productId={productId} variantId={variantId}>
+      {(formProps) => {
+        if (tab === 'prices') {
+          return (
+            <CustomizableProductPrices
+              resource={formProps.resource}
+              variant={formProps.variant}
+              product={formProps.product}
+            />
+          );
+        }
+        return <CustomizableProductEditor resource={formProps.resource} />;
+      }}
+    </CustomizableProductLoader>
   );
 };
 
