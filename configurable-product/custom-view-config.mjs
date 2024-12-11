@@ -16,6 +16,9 @@ const config = {
       url: '${env:APPLICATION_URL}',
     },
   },
+  additionalEnv: {
+    supportedProductTypeList: '${env:SUPPORTED_PRODUCT_TYPES}',
+  },
   oAuthScopes: {
     view: ['view_products'],
     manage: ['manage_products'],

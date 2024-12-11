@@ -45,5 +45,9 @@ resource "vercel_project" "mc-configurable-product" {
     key = "INITIAL_PROJECT_KEY"
     target = ["production", "preview", "development"]
     value = local.envs["INITIAL_PROJECT_KEY"]
+  }, {
+    key = "SUPPORTED_PRODUCT_TYPES"
+    target = ["production", "preview", "development"]
+    value = local.envs["SUPPORTED_PRODUCT_TYPES"]
   }]
 }

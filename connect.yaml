@@ -30,6 +30,10 @@ deployAs:
           description: enable new jsx transform
           required: true
           default: "true"
+        - key: SUPPORTED_PRODUCT_TYPES
+          description: comma-separated list of supported product types
+          required: true
+          default: "configurable"
       securedConfiguration:
         - key: CTP_CLIENT_ID
           description: client_id of an API Client for the commercetools Composable Commerce Project
