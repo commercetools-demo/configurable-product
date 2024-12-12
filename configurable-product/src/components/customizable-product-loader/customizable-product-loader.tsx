@@ -21,6 +21,7 @@ import Spacings from '@commercetools-uikit/spacings';
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import { useShowNotification } from '@commercetools-frontend/actions-global';
 import { useCustomObjectUpdater } from '../../hooks/use-custom-object-connector/use-custom-object-connector';
+import { useCustomViewContext } from '@commercetools-frontend/application-shell-connectors';
 
 export type FormProps = {
   resource: TCustomObject;
@@ -34,7 +35,7 @@ export type Props = {
   children: ({ resource, variant }: FormProps) => JSX.Element;
 };
 const configuration = 'configuration';
-export const SUPPORTED_PRODUCT_TYPE = 'configurable';
+const DEFAULT_SUPPORTED_PRODUCT_TYPE = 'configurable';
 const CustomizableProductLoader: FC<Props> = ({
   productId,
   variantId,
@@ -44,6 +45,13 @@ const CustomizableProductLoader: FC<Props> = ({
   const showNotification = useShowNotification();
   const customObjectUpdater = useCustomObjectUpdater();
   const productUpdater = useProductUpdater();
+  // @ts-ignore
+  const { supportedProductTypeList } = useCustomViewContext(
+    (context) => context.environment
+  );
+  const supportedProductTypes = supportedProductTypeList
+    ? supportedProductTypeList.split(',').map((value: string) => value.trim())
+    : [DEFAULT_SUPPORTED_PRODUCT_TYPE];
 
   const { product, error, loading, refetch } =
     useRetrieveCustomObjectForProduct({
@@ -70,13 +78,13 @@ const CustomizableProductLoader: FC<Props> = ({
       </ContentNotification>
     );
   }
-  if (product?.productType?.key !== SUPPORTED_PRODUCT_TYPE) {
+  if (!supportedProductTypes.includes(product?.productType?.key)) {
     return (
       <ContentNotification type="info">
         <Text.Body>
           <FormattedMessage
             {...messages.wrongProductType}
-            values={{ productType: SUPPORTED_PRODUCT_TYPE }}
+            values={{ productType: supportedProductTypeList }}
           />
         </Text.Body>
       </ContentNotification>

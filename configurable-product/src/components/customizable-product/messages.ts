@@ -34,7 +34,7 @@ export default defineMessages({
   wrongProductType: {
     id: 'CustomizableProduct.wrongProductType',
     defaultMessage:
-      'This Custom View only works for products of type {productType}.',
+      'This Custom View only works for products of types {productType}.',
   },
   createAndLink: {
     id: 'CustomizableProduct.createAndLink',
