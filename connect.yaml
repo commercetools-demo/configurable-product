@@ -1,43 +1,19 @@
 deployAs:
-  - name: configurable-product
-    applicationType: mc-app
-    endpoint: /
+  - name: asset-manager
+    applicationType: merchant-center-custom-view
     configuration:
       standardConfiguration:
-        - key: CTP_PROJECT_KEY
-          description: Project key of the commercetools Composable Commerce Project
-          required: true
-        - key: CTP_REGION
-          description: Region where the commercetools Composable Commerce Project is hosted
-          required: true
         - key: CUSTOM_VIEW_ID
-          description: The Custom VIEW ID
-          required: true
-        - key: APPLICATION_ID
-          description: The Custom Application ID
-          required: true
-        - key: APPLICATION_URL
-          description: custom app production app URL
+          description: The Custom View ID is provided when you add a Custom View in the Merchant Center
           required: true
         - key: CLOUD_IDENTIFIER
           description: one of the following gcp-us, gcp-eu, aws-us, aws-eu
           required: true
-          default: "gcp-eu"
+          default: 'gcp-eu'
         - key: INITIAL_PROJECT_KEY
           description: development project key
           required: false
-        - key: ENABLE_NEW_JSX_TRANSFORM
-          description: enable new jsx transform
-          required: true
-          default: "true"
         - key: SUPPORTED_PRODUCT_TYPES
           description: comma-separated list of supported product types
           required: true
           default: "configurable"
-      securedConfiguration:
-        - key: CTP_CLIENT_ID
-          description: client_id of an API Client for the commercetools Composable Commerce Project
-          required: true
-        - key: CTP_CLIENT_SECRET
-          description: secret of an API Client for the commercetools Composable Commerce Project
-          required: true
