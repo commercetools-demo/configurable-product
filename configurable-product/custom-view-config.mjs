@@ -3,6 +3,7 @@
  */
 const config = {
   name: 'Configurable Product',
+  description: 'Configure products and store this config using a custom object',
   cloudIdentifier: '${env:CLOUD_IDENTIFIER}',
   env: {
     development: {
