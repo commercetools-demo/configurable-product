@@ -1,5 +1,5 @@
 deployAs:
-  - name: asset-manager
+  - name: configurable-product
     applicationType: merchant-center-custom-view
     configuration:
       standardConfiguration:
