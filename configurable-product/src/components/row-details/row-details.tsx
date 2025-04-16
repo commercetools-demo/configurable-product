@@ -9,9 +9,10 @@ import {
 } from '@commercetools-frontend/application-components';
 import { Route, Switch, useParams } from 'react-router-dom';
 import {
+  graphQLErrorHandler,
   useCustomObjectFetcher,
   useCustomObjectUpdater,
-} from '../../hooks/use-custom-object-connector/use-custom-object-connector';
+} from 'commercetools-demo-shared-data-fetching-hooks';
 import { ContentNotification } from '@commercetools-uikit/notifications';
 import {
   customObjectToConfigRow,
@@ -76,27 +77,22 @@ const RowDetails: FC<Props> = ({ onClose }) => {
     const index = oldValue.findIndex((entry) => entry.key === keyName);
     oldValue[index] = row;
 
-    await customObjectUpdater.execute({
-      draft: {
-        container: customObject.container,
-        key: customObject.key,
-        value: JSON.stringify(oldValue),
-      },
-      onCompleted() {
+    await customObjectUpdater
+      .execute({
+        draft: {
+          container: customObject.container,
+          key: customObject.key,
+          value: JSON.stringify(oldValue),
+        },
+      })
+      .then(() => {
         showNotification({
           kind: NOTIFICATION_KINDS_SIDE.success,
           domain: DOMAINS.SIDE,
           text: intl.formatMessage(messages.editSuccess),
         });
-      },
-      onError(message) {
-        showNotification({
-          kind: NOTIFICATION_KINDS_SIDE.error,
-          domain: DOMAINS.SIDE,
-          text: intl.formatMessage(messages.editError, { message: message }),
-        });
-      },
-    });
+      })
+      .catch(graphQLErrorHandler(showNotification));
     refetch();
   };
 
@@ -105,28 +101,22 @@ const RowDetails: FC<Props> = ({ onClose }) => {
     const index = oldValue.findIndex((entry) => entry.key === keyName);
     oldValue.splice(index, 1);
 
-    await customObjectUpdater.execute({
-      draft: {
-        container: customObject.container,
-        key: customObject.key,
-        value: JSON.stringify(oldValue),
-      },
-      onCompleted() {
+    await customObjectUpdater
+      .execute({
+        draft: {
+          container: customObject.container,
+          key: customObject.key,
+          value: JSON.stringify(oldValue),
+        },
+      })
+      .then(() => {
         showNotification({
           kind: NOTIFICATION_KINDS_SIDE.success,
           domain: DOMAINS.SIDE,
           text: intl.formatMessage(messages.editSuccess),
         });
-        onClose();
-      },
-      onError(message) {
-        showNotification({
-          kind: NOTIFICATION_KINDS_SIDE.error,
-          domain: DOMAINS.SIDE,
-          text: intl.formatMessage(messages.editError, { message: message }),
-        });
-      },
-    });
+      })
+      .catch(graphQLErrorHandler(showNotification));
   };
 
   return (

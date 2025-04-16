@@ -6,9 +6,10 @@ import {
 } from '@commercetools-frontend/application-components';
 import { useParams } from 'react-router-dom';
 import {
+  graphQLErrorHandler,
   useCustomObjectFetcher,
   useCustomObjectUpdater,
-} from '../../hooks/use-custom-object-connector/use-custom-object-connector';
+} from 'commercetools-demo-shared-data-fetching-hooks';
 import { ContentNotification } from '@commercetools-uikit/notifications';
 import {
   customObjectToConfigRow,
@@ -71,13 +72,15 @@ const RowNew: FC<Props> = ({ onClose, nextUrl }) => {
     const oldValue: Array<Row> = [...mapCustomObject(customObject)];
     oldValue.push(row);
 
-    await customObjectUpdater.execute({
-      draft: {
-        container: customObject.container,
-        key: customObject.key,
-        value: JSON.stringify(oldValue),
-      },
-      onCompleted() {
+    await customObjectUpdater
+      .execute({
+        draft: {
+          container: customObject.container,
+          key: customObject.key,
+          value: JSON.stringify(oldValue),
+        },
+      })
+      .then(() => {
         showNotification({
           kind: NOTIFICATION_KINDS_SIDE.success,
           domain: DOMAINS.SIDE,
@@ -85,17 +88,8 @@ const RowNew: FC<Props> = ({ onClose, nextUrl }) => {
         });
         refetch();
         push(`${nextUrl + id}/${row.key}/details`);
-      },
-      onError(message) {
-        showNotification({
-          kind: NOTIFICATION_KINDS_SIDE.error,
-          domain: DOMAINS.SIDE,
-          text: intl.formatMessage(messages.editError, { message: message }),
-        });
-
-        refetch();
-      },
-    });
+      })
+      .catch(graphQLErrorHandler(showNotification));
   };
 
   return (

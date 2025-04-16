@@ -9,8 +9,8 @@ const config = {
     development: {
       initialProjectKey: '${env:INITIAL_PROJECT_KEY}',
       hostUriPath:
-        '/tech-sales-good-store/products/4ea7b9e8-730f-413b-953a-9cad3278d7eb/variants/2/prices',
-      // '/tech-sales-good-store/products/4ea7b9e8-730f-413b-953a-9cad3278d7eb/variants/2',
+        // '/tech-sales-good-store/products/013ded80-5cbe-42b3-aa4b-45c73d73c161/variants/2/prices',
+        '/tech-sales-good-store/products/013ded80-5cbe-42b3-aa4b-45c73d73c161/variants/1',
     },
     production: {
       customViewId: '${env:CUSTOM_VIEW_ID}',

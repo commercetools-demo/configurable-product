@@ -20,8 +20,12 @@ import {
 import Spacings from '@commercetools-uikit/spacings';
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import { useShowNotification } from '@commercetools-frontend/actions-global';
-import { useCustomObjectUpdater } from '../../hooks/use-custom-object-connector/use-custom-object-connector';
 import { useCustomViewContext } from '@commercetools-frontend/application-shell-connectors';
+import {
+  graphQLErrorHandler,
+  useCustomObjectUpdater,
+} from 'commercetools-demo-shared-data-fetching-hooks';
+import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 
 export type FormProps = {
   resource: TCustomObject;
@@ -66,7 +70,15 @@ const CustomizableProductLoader: FC<Props> = ({
     );
   }
 
-  if (!loading && !product) {
+  if (loading) {
+    return (
+      <Spacings.Stack alignItems="center">
+        <LoadingSpinner />
+      </Spacings.Stack>
+    );
+  }
+
+  if (!product) {
     return (
       <ContentNotification type="info">
         <Text.Body>
@@ -116,29 +128,26 @@ const CustomizableProductLoader: FC<Props> = ({
     customObjectKey = product.id + '-' + variant.sku;
   }
   const onSubmit = async () => {
-    const result = await customObjectUpdater.execute({
-      draft: {
-        container: 'configurable-product',
-        key: customObjectKey,
-        value: JSON.stringify({}),
-      },
-      onCompleted() {
+    const id = await customObjectUpdater
+      .execute({
+        draft: {
+          container: 'configurable-product',
+          key: customObjectKey,
+          value: JSON.stringify({}),
+        },
+      })
+      .then((result) => {
         showNotification({
           kind: NOTIFICATION_KINDS_SIDE.success,
           domain: DOMAINS.SIDE,
           text: intl.formatMessage(messages.editSuccess),
         });
-      },
-      onError(message) {
-        showNotification({
-          kind: NOTIFICATION_KINDS_SIDE.error,
-          domain: DOMAINS.SIDE,
-          text: intl.formatMessage(messages.editError, { message: message }),
-        });
-
-        refetch();
-      },
-    });
+        return result.data?.createOrUpdateCustomObject?.id;
+      })
+      .catch(() => {
+        graphQLErrorHandler(showNotification);
+        return undefined;
+      });
     await productUpdater.execute({
       actions: [
         {
@@ -146,7 +155,7 @@ const CustomizableProductLoader: FC<Props> = ({
             name: configuration,
             variantId: Number.parseInt(variantId),
             value: JSON.stringify({
-              id: result.data?.createOrUpdateCustomObject?.id,
+              id: id,
               typeId: 'key-value-document',
             }),
           },

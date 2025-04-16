@@ -8,7 +8,7 @@ import SecondaryButton from '@commercetools-uikit/secondary-button';
 import Spacings from '@commercetools-uikit/spacings';
 import messages from './messages';
 import styles from './category-field.mod.css';
-import { CategorySearchInput } from '../category-search-input';
+import { CategorySelector } from 'commercetools-demo-shared-entity-selectors';
 import { useFormikContext } from 'formik';
 import { Row } from '../row-form/row-form';
 import React, { FC } from 'react';
@@ -137,7 +137,7 @@ const CategoryField: FC<CategoryFieldProps> = ({
           ({ category, minQuantity, maxQuantity, additionalCharge }, index) => (
             <Spacings.Inline key={index} alignItems="center">
               <div className={styles['category-search']}>
-                <CategorySearchInput
+                <CategorySelector
                   name={`${name}.${index}.${CATEGORY}`}
                   value={category}
                   placeholder={intl.formatMessage(messages.categoryPlaceholder)}
@@ -148,6 +148,8 @@ const CategoryField: FC<CategoryFieldProps> = ({
                     index,
                     CATEGORY
                   )}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                 />
               </div>
               <div className={styles['category-quantity']}>

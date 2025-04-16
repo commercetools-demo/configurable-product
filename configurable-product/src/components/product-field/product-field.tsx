@@ -10,7 +10,7 @@ import Spacings from '@commercetools-uikit/spacings';
 import { PRODUCT, QUANTITY } from './constants';
 import messages from './messages';
 import styles from './product-field.mod.css';
-import { ProductSearchInput } from '../product-search-input';
+import { ProductVariantSelector } from 'commercetools-demo-shared-entity-selectors';
 import { useFormikContext } from 'formik';
 import { Row } from '../row-form/row-form';
 import { FormikErrors, FormikTouched } from 'formik/dist/types';
@@ -128,7 +128,7 @@ const ProductField: FC<ProductFieldProps> = ({
         {formik.values.products.map(({ product, quantity }, index) => (
           <Spacings.Inline key={index} alignItems="center">
             <div className={styles['product-search']}>
-              <ProductSearchInput
+              <ProductVariantSelector
                 name={`${name}.${index}.${PRODUCT}`}
                 value={product}
                 placeholder={intl.formatMessage(messages.productPlaceholder)}
