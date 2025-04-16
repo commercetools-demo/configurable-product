@@ -11,7 +11,7 @@ import { Route, Switch, useParams } from 'react-router-dom';
 import {
   graphQLErrorHandler,
   useCustomObjectFetcher,
-  useCustomObjectUpdater,
+  useCustomObjectCreatorOrUpdater,
 } from 'commercetools-demo-shared-data-fetching-hooks';
 import { ContentNotification } from '@commercetools-uikit/notifications';
 import {
@@ -47,7 +47,7 @@ const RowDetails: FC<Props> = ({ onClose }) => {
     projectLanguages: context.project?.languages ?? [],
   }));
 
-  const customObjectUpdater = useCustomObjectUpdater();
+  const customObjectUpdater = useCustomObjectCreatorOrUpdater();
 
   const { customObject, error, refetch, loading } = useCustomObjectFetcher({
     id: id,

@@ -23,7 +23,7 @@ import { useShowNotification } from '@commercetools-frontend/actions-global';
 import { useCustomViewContext } from '@commercetools-frontend/application-shell-connectors';
 import {
   graphQLErrorHandler,
-  useCustomObjectUpdater,
+  useCustomObjectCreatorOrUpdater,
 } from 'commercetools-demo-shared-data-fetching-hooks';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 
@@ -47,7 +47,7 @@ const CustomizableProductLoader: FC<Props> = ({
 }) => {
   const intl = useIntl();
   const showNotification = useShowNotification();
-  const customObjectUpdater = useCustomObjectUpdater();
+  const customObjectUpdater = useCustomObjectCreatorOrUpdater();
   const productUpdater = useProductUpdater();
   // @ts-ignore
   const { supportedProductTypeList } = useCustomViewContext(
@@ -136,13 +136,13 @@ const CustomizableProductLoader: FC<Props> = ({
           value: JSON.stringify({}),
         },
       })
-      .then((result) => {
+      .then(({ createOrUpdateCustomObject }) => {
         showNotification({
           kind: NOTIFICATION_KINDS_SIDE.success,
           domain: DOMAINS.SIDE,
           text: intl.formatMessage(messages.editSuccess),
         });
-        return result.data?.createOrUpdateCustomObject?.id;
+        return createOrUpdateCustomObject?.id;
       })
       .catch(() => {
         graphQLErrorHandler(showNotification);
